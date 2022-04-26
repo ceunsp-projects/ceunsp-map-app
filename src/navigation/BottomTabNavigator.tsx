@@ -6,7 +6,7 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/Map';
 import TabTwoScreen from '../screens/TabTwoScreen';
-import { RootTabParamList, RootTabScreenProps } from '../types';
+import { RootTabParamList, RootTabScreenProps } from '../../types';
 import TabBarIcon from './TabBarIcon';
 
 
