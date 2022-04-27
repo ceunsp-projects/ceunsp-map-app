@@ -1,3 +1,40 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "files.associations": {
+    "*.js": "javascriptreact",
+    ".env*": "properties",
+    ".prettierrc": "json",
+    "Fastfile": "ruby",
+    "Podfile": "ruby",
+    "apple-app-site-association": "json"
+  },
+  "files.exclude": {
+    "**/.directory": true,
+    "**/.git": true,
+    "**/.hg": true,
+    "**/.svn": true,
+    "**/CVS": true,
+    "*.apk": true,
+    "*.zip": true,
+    "node_modules": true,
+  },
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.rulers": [
+    {
+      "column": 120,
+      "color": "#fd3e3e78"
+    }
+  ]
 }
