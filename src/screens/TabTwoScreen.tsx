@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Camera from '~/components/Camera';
 
@@ -7,7 +7,7 @@ const TabTwoScreen = memo(() => {
     <View style={styles.container}>
       <Camera />
     </View>
-  ); 
+  );
 });
 
 const styles = StyleSheet.create({
