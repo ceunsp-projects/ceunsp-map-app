@@ -1,13 +1,15 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Camera from '~/components/Camera';
+import { LoginPage } from './LoginPage';
 
 const TabTwoScreen = memo(() => {
   return (
     <View style={styles.container}>
-      <Camera />
+      {/* <Camera /> */}
+      <LoginPage />
     </View>
-  ); 
+  );
 });
 
 const styles = StyleSheet.create({
@@ -17,4 +19,3 @@ const styles = StyleSheet.create({
 });
 
 export default TabTwoScreen;
-
