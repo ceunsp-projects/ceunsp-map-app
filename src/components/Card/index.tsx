@@ -1,27 +1,33 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Image, Text, View } from 'react-native';
 
 import { styles } from './styles';
+
+type ImageProps = {
+  uri: string;
+};
 
 interface CardProps {
   title: string;
   description: string;
   latitude: number;
+  image: ImageProps;
 }
 
-export function Card({ title, description, latitude }: CardProps) {
+export const Images = [
+  { uri: 'https://i.imgur.com/sNam9iJ.jpg' },
+  { uri: 'https://i.imgur.com/N7rlQYt.jpg' },
+  { uri: 'https://i.imgur.com/UDrH0wm.jpg' },
+  { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
+];
+
+export function Card({ title, description, latitude, image }: CardProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
-        <Text style={styles.description}>{latitude}</Text>
-
-        <Feather style={styles.icon} name='anchor' />
-      </View>
-
-      <View style={styles.footer}></View>
+      <Image source={image} style={{ width: '100%', height: '50%' }} />
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.description}>{description}</Text>
+      <Text style={styles.description}>{latitude}</Text>
     </View>
   );
 }

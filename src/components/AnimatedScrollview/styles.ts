@@ -26,8 +26,7 @@ export const styles = StyleSheet.create({
   },
   cardWrapperIn: {
     backgroundColor: '#FFF',
-    width: 240,
-    borderWidth: 1,
+    width: 320,
     borderRadius: 5,
     marginHorizontal: 14
   }

@@ -1,37 +1,51 @@
-import React, { useRef } from 'react';
-import { Animated, Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import React, { forwardRef, useEffect, useRef } from 'react';
+import { Animated, Dimensions, Text, TouchableOpacity, View, Image, Platform } from 'react-native';
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
+import {} from '../../screens/Map';
 import { styles } from './styles';
-import theme from '~/global/theme';
-import { Card } from '../Card';
+
+import { Card, Images } from '../Card';
+
+// interface AnimatedScrollviewProps {
+//   map: React.LegacyRef<MapView> | undefined
+// }
 
 function AnimatedScrollview() {
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const { width, height } = Dimensions.get('window');
+  const CARD_HEIGHT = 220;
+  const CARD_WIDTH = width * 0.8;
+  const SPACING_FOR_CARD_INSET = width * 0.1 - 25;
 
-  const Images = [
-    { uri: 'https://i.imgur.com/sNam9iJ.jpg' },
-    { uri: 'https://i.imgur.com/N7rlQYt.jpg' },
-    { uri: 'https://i.imgur.com/UDrH0wm.jpg' },
-    { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
-  ];
-
+  let mapIndex = 0;
   const animation = new Animated.Value(0);
 
-  const { width, height } = Dimensions.get('window');
-  const CARD_WIDTH = width * 0.8;
+  useEffect(() => {
+    animation.addListener(({ value }) => {
+      let index = Math.floor(value / CARD_WIDTH + 0.3);
+      if (index >= state.markers.length) {
+        index = state.markers.length - 1;
+      }
+      if (index <= 0) {
+        index = 0;
+      }
 
-  const CARD_HEIGHT = height / 4;
+      const regionTimeout = setTimeout(() => {
+        if (mapIndex !== index) {
+          mapIndex = index;
+          const { coordinate } = state.markers[index];
+        }
+      }, 10);
+    });
+  });
 
   const state = {
     markers: [
       {
         coordinate: {
-          latitude: 45.524548,
-          longitude: -122.6749817
+          latitude: -23.20618,
+          longitude: -47.29654
         },
         title: 'Best Place',
         description: 'This is the best place in Portland',
@@ -75,46 +89,51 @@ function AnimatedScrollview() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={{ position: 'absolute', bottom: 90, right: 25, display: 'none' }}
-        onPress={() => {
-          bottomSheetRef.current?.expand();
+      <Animated.ScrollView
+        horizontal
+        scrollEventThrottle={1}
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={CARD_WIDTH + 20}
+        snapToAlignment='center'
+        contentInset={{
+          top: 0,
+          left: SPACING_FOR_CARD_INSET,
+          bottom: 0,
+          right: SPACING_FOR_CARD_INSET
         }}
-      >
-        <Text>X</Text>
-      </TouchableOpacity>
-      <BottomSheet ref={bottomSheetRef} snapPoints={[1, 280]}>
-        <Animated.ScrollView
-          horizontal
-          scrollEventThrottle={1}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={CARD_WIDTH + 20}
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {
-                  contentOffset: {
-                    x: animation
-                  }
+        contentContainerStyle={{
+          paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0
+        }}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  x: animation
                 }
               }
-            ],
-            { useNativeDriver: true }
-          )}
-          style={styles.scrollView}
-          contentContainerStyle={{ paddingLeft: 24, paddingRight: 24 }}
-        >
-          <View style={styles.cardWrapper}>
-            {state.markers.map((marker, index) => {
-              return (
-                <View style={styles.cardWrapperIn} key={index}>
-                  <Card title={marker.title} description={marker.description} latitude={marker.coordinate.latitude} />
-                </View>
-              );
-            })}
-          </View>
-        </Animated.ScrollView>
-      </BottomSheet>
+            }
+          ],
+          { useNativeDriver: true }
+        )}
+        style={styles.scrollView}
+      >
+        <View style={styles.cardWrapper}>
+          {state.markers.map((marker, index) => {
+            return (
+              <View style={styles.cardWrapperIn} key={index}>
+                <Card
+                  title={marker.title}
+                  description={marker.description}
+                  latitude={marker.coordinate.latitude}
+                  image={marker.image}
+                />
+              </View>
+            );
+          })}
+        </View>
+      </Animated.ScrollView>
     </View>
   );
 }

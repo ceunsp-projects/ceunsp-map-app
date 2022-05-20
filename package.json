@@ -36,6 +36,7 @@
     "expo-status-bar": "~1.2.0",
     "expo-web-browser": "~10.1.0",
     "jpeg-js": "^0.4.3",
+    "phosphor-react-native": "^1.1.1",
     "react": "17.0.2",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
@@ -46,6 +47,7 @@
     "react-native-reanimated": "~2.3.1",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
+    "react-native-svg": "12.1.1",
     "react-native-web": "0.17.1",
     "react-native-webview": "^11.18.1"
   },

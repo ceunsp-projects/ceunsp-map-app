@@ -7,7 +7,7 @@ import theme from '~/global/theme';
 export function LoginPage() {
   return (
     <View style={styles.container}>
-      <View style={styles.header}></View>
+      <View style={styles.header}>
         <Text style={styles.headerText}>CEUNSP LOCALIZA !</Text>
         <Feather name='map-pin' size={36} color={theme.colors.red} />
       </View>
@@ -26,7 +26,7 @@ export function LoginPage() {
       </View>
 
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Teste</Text>
+        <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
     </View>
   );
