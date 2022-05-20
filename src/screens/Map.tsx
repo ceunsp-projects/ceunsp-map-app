@@ -1,9 +1,10 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import MapView, { Callout, Marker } from 'react-native-maps';
+import MapView, { Marker, Callout, MarkerAnimated } from 'react-native-maps';
 
 import { View } from '../components/Themed';
 import { RootTabScreenProps } from '../../types';
+
 import AnimatedScrollview from '~/components/AnimatedScrollview';
 import { Card } from '~/components/Card';
 
@@ -14,9 +15,54 @@ export const Images = [
   { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
 ];
 
-const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
-  const _map = useRef<MapView>(null);
+const state = {
+  markers: [
+    {
+      coordinate: {
+        latitude: -23.20618,
+        longitude: -47.29654
+      },
+      title: 'Best Place',
+      description: 'This is the best place in Portland',
+      image: Images[0]
+    },
+    {
+      coordinate: {
+        latitude: -23.20595,
+        longitude: -47.29655
+      },
+      title: 'Second Best Place',
+      description: 'This is the second best place in Portland',
+      image: Images[1]
+    },
+    {
+      coordinate: {
+        latitude: 45.5230786,
+        longitude: -122.6701034
+      },
+      title: 'Third Best Place',
+      description: 'This is the third best place in Portland',
+      image: Images[2]
+    },
+    {
+      coordinate: {
+        latitude: 45.521016,
+        longitude: -122.6561917
+      },
+      title: 'Fourth Best Place',
+      description: 'This is the fourth best place in Portland',
+      image: Images[3]
+    }
+  ],
+  region: {
+    latitude: 45.52220671242907,
+    longitude: -122.6653281029795,
+    latitudeDelta: 0.04864195044303443,
+    longitudeDelta: 0.040142817690068
+  }
+};
 
+const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   const { width, height } = Dimensions.get('window');
   const CARD_HEIGHT = 220;
   const CARD_WIDTH = width * 0.8;
@@ -46,61 +92,38 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
                 latitudeDelta: state.region.latitudeDelta,
                 longitudeDelta: state.region.longitudeDelta
               },
-              350
+              500
             );
         }
       }, 10);
     });
   });
 
-  const [openScrollview, setOpenScrollView] = useState(false);
+  const interpolations = state.markers.map((marker, index) => {
+    const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
 
-  const state = {
-    markers: [
-      {
-        coordinate: {
-          latitude: -23.20618,
-          longitude: -47.29654
-        },
-        title: 'Best Place',
-        description: 'This is the best place in Portland',
-        image: Images[0]
-      },
-      {
-        coordinate: {
-          latitude: -24.20618,
-          longitude: -48.29654
-        },
-        title: 'Second Best Place',
-        description: 'This is the second best place in Portland',
-        image: Images[1]
-      },
-      {
-        coordinate: {
-          latitude: 45.5230786,
-          longitude: -122.6701034
-        },
-        title: 'Third Best Place',
-        description: 'This is the third best place in Portland',
-        image: Images[2]
-      },
-      {
-        coordinate: {
-          latitude: 45.521016,
-          longitude: -122.6561917
-        },
-        title: 'Fourth Best Place',
-        description: 'This is the fourth best place in Portland',
-        image: Images[3]
-      }
-    ],
-    region: {
-      latitude: 45.52220671242907,
-      longitude: -122.6653281029795,
-      latitudeDelta: 0.04864195044303443,
-      longitudeDelta: 0.040142817690068
-    }
-  };
+    const scale = animation.interpolate({
+      inputRange,
+      outputRange: [1, 1.5, 1],
+      extrapolate: 'clamp'
+    });
+
+    return { scale };
+  });
+
+  // const onMarkerPress = (mapEventData) => {
+  //   const markerID = mapEventData._targetInst.return.key;
+
+  //   let x = (markerID * CARD_WIDTH) + (markerID * 20);
+  //   if (Platform.OS === 'ios') {
+  //     x = x - SPACING_FOR_CARD_INSET;
+  //   }
+
+  //   _scrollView.current?.scrollTo({x: x, y: 0, animated: true});
+  // }
+
+  const _map = useRef<MapView>(null);
+  const _scrollView = useRef<MapView>(null);
 
   return (
     <View style={styles.container}>
@@ -114,21 +137,26 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           longitudeDelta: 0.0021
         }}
       >
-        <Marker
-          coordinate={{
-            latitude: -23.20618,
-            longitude: -47.29654,
-            latitudeDelta: 0,
-            longitudeDelta: 0.0021
-          }}
-        >
-          <Callout>
-            <Text>Você está aqui</Text>
-          </Callout>
-        </Marker>
+        {state.markers.map((marker, index) => {
+          const scaleStyle = {
+            transform: [
+              {
+                scale: interpolations[index].scale
+              }
+            ]
+          };
+          return (
+            <Marker key={index} coordinate={marker.coordinate}>
+              <Animated.View style={[styles.ring]}>
+                <View style={styles.marker} />
+              </Animated.View>
+            </Marker>
+          );
+        })}
       </MapView>
 
-      <TouchableOpacity
+      {/* Botão pra abrir o scrollview */}
+      {/* <TouchableOpacity
         style={{ position: 'absolute', top: 12, left: 12 }}
         onPress={() => {
           setOpenScrollView(!openScrollview);
@@ -136,7 +164,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
       >
         <Text>{openScrollview ? 'Close' : 'Open'}</Text>
       </TouchableOpacity>
-      {/* {openScrollview && <AnimatedScrollview />} */}
+      {openScrollview && <AnimatedScrollview />} */}
 
       <Animated.ScrollView
         horizontal
@@ -189,10 +217,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center'
+    flex: 1
   },
   title: {
     color: 'black',
@@ -204,10 +229,14 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height
   },
   marker: {
-    width: '100%',
+    width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: 'rgba(130,4,150, 0.9)'
+  },
+  markerWrap: {
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 
   cardTitle: {
@@ -243,6 +272,18 @@ const styles = StyleSheet.create({
     width: 320,
     borderRadius: 5,
     marginHorizontal: 14
+  },
+
+  ring: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(130,4,150, 0.3)',
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: 'rgba(130,4,150, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
 
