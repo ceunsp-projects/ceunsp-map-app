@@ -12,6 +12,7 @@ interface CardProps {
   description: string;
   latitude: number;
   image: ImageProps;
+  first: boolean;
 }
 
 export const Images = [
@@ -21,13 +22,15 @@ export const Images = [
   { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
 ];
 
-export function Card({ title, description, latitude, image }: CardProps) {
+export function Card({ title, description, latitude, image, first }: CardProps) {
   return (
-    <View style={styles.container}>
-      <Image source={image} style={{ width: '100%', height: '50%' }} />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
-      <Text style={styles.description}>{latitude}</Text>
+    <View style={first ? styles.firstContainer : styles.container}>
+      <Image source={image} style={styles.img} />
+      <View style={styles.cardDescription}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.description}>{latitude}</Text>
+      </View>
     </View>
   );
 }

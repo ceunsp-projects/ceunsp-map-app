@@ -1,12 +1,13 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import MapView, { Marker, Callout, MarkerAnimated } from 'react-native-maps';
+import { Animated, Dimensions, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { Compass, X } from 'phosphor-react-native';
+import MapView, { Marker } from 'react-native-maps';
 
 import { View } from '../components/Themed';
 import { RootTabScreenProps } from '../../types';
 
-import AnimatedScrollview from '~/components/AnimatedScrollview';
 import { Card } from '~/components/Card';
+import theme from '~/global/theme';
 
 export const Images = [
   { uri: 'https://i.imgur.com/sNam9iJ.jpg' },
@@ -63,10 +64,13 @@ const state = {
 };
 
 const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
+  const [showCards, setShowCards] = useState(false);
+  const [translate, setTranslate] = useState(0);
+
   const { width, height } = Dimensions.get('window');
-  const CARD_HEIGHT = 220;
-  const CARD_WIDTH = width * 0.8;
-  const SPACING_FOR_CARD_INSET = width * 0.1 - 25;
+  // const CARD_HEIGHT = 220;
+  const CARD_WIDTH = width - 7.5;
+  // const SPACING_FOR_CARD_INSET = width * 0.1 - 25;
 
   let mapIndex = 0;
   const animation = new Animated.Value(0);
@@ -123,7 +127,6 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   // }
 
   const _map = useRef<MapView>(null);
-  const _scrollView = useRef<MapView>(null);
 
   return (
     <View style={styles.container}>
@@ -155,62 +158,56 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
         })}
       </MapView>
 
-      {/* Botão pra abrir o scrollview */}
-      {/* <TouchableOpacity
-        style={{ position: 'absolute', top: 12, left: 12 }}
-        onPress={() => {
-          setOpenScrollView(!openScrollview);
-        }}
-      >
-        <Text>{openScrollview ? 'Close' : 'Open'}</Text>
+      <TouchableOpacity style={styles.btnShowCards} onPress={() => setShowCards(!showCards)}>
+        {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />}
       </TouchableOpacity>
-      {openScrollview && <AnimatedScrollview />} */}
 
-      <Animated.ScrollView
-        horizontal
-        scrollEventThrottle={1}
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={CARD_WIDTH + 20}
-        snapToAlignment='center'
-        contentInset={{
-          top: 0,
-          left: SPACING_FOR_CARD_INSET,
-          bottom: 0,
-          right: SPACING_FOR_CARD_INSET
-        }}
-        contentContainerStyle={{
-          paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0
-        }}
-        onScroll={Animated.event(
-          [
-            {
-              nativeEvent: {
-                contentOffset: {
-                  x: animation
+      {showCards && (
+        <Animated.ScrollView
+          horizontal
+          scrollEventThrottle={1}
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={CARD_WIDTH}
+          snapToAlignment='center'
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    x: animation
+                  }
                 }
               }
-            }
-          ],
-          { useNativeDriver: true }
-        )}
-        style={styles.scrollView}
-      >
-        <View style={styles.cardWrapper}>
-          {state.markers.map((marker, index) => {
-            return (
-              <View style={styles.cardWrapperIn} key={index}>
+            ],
+            { useNativeDriver: true }
+          )}
+          style={styles.scrollView}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '100%',
+              position: 'relative',
+              backgroundColor: 'transparent',
+              marginBottom: 5
+            }}
+          >
+            {state.markers.map((marker, index) => {
+              return (
                 <Card
+                  key={index}
                   title={marker.title}
                   description={marker.description}
                   latitude={marker.coordinate.latitude}
                   image={marker.image}
+                  first={index == 0 ? true : false}
                 />
-              </View>
-            );
-          })}
-        </View>
-      </Animated.ScrollView>
+              );
+            })}
+          </View>
+        </Animated.ScrollView>
+      )}
     </View>
   );
 });
@@ -239,13 +236,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
 
-  cardTitle: {
-    fontSize: 18,
+  btnShowCards: {
+    width: 40,
+    height: 40,
+    borderRadius: 24,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
-  },
-  cardDescription: {
-    fontSize: 12
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: theme.colors.navy_blue
   },
 
   scrollView: {
@@ -256,22 +256,12 @@ const styles = StyleSheet.create({
     left: 0
   },
   cardWrapper: {
-    flex: 1,
-
     flexDirection: 'row',
     width: '100%',
     position: 'relative',
     backgroundColor: 'transparent',
-
-    padding: 4,
-    marginRight: 16,
-    paddingHorizontal: 24
-  },
-  cardWrapperIn: {
-    backgroundColor: '#FFF',
-    width: 320,
-    borderRadius: 5,
-    marginHorizontal: 14
+    marginBottom: 5,
+    transform: [{ translateY: 250 }]
   },
 
   ring: {
