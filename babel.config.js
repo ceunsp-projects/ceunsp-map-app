@@ -22,10 +22,7 @@ module.exports = function (api) {
           }
         },
       ],
-<<<<<<< HEAD
       'react-native-reanimated/plugin',
-      
-=======
       [
         "module:react-native-dotenv", {
           "moduleName": "@env",
@@ -36,7 +33,6 @@ module.exports = function (api) {
           "allowUndefined": true
         }
       ]
->>>>>>> 3d9ecdc3d2c7cc99f45538b9c1e7cf60b954558b
     ],
   };
 };
