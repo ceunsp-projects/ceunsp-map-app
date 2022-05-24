@@ -5,12 +5,7 @@
   "editor.formatOnPaste": false,
   "editor.formatOnSave": true,
   "editor.formatOnType": false,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "files.associations": {
     "*.js": "javascriptreact",
     ".env*": "properties",
@@ -27,7 +22,7 @@
     "**/CVS": true,
     "*.apk": true,
     "*.zip": true,
-    "node_modules": true,
+    "node_modules": true
   },
   "typescript.preferences.quoteStyle": "single",
   "typescript.tsdk": "node_modules/typescript/lib",
@@ -36,5 +31,6 @@
       "column": 120,
       "color": "#fd3e3e78"
     }
-  ]
+  ],
+  "cSpell.words": ["aqui", "está", "Mapa", "Pressable", "Scrollview", "Toogle", "Você"]
 }

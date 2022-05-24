@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { memo } from 'react'
+import React, { memo } from 'react';
+import { Pressable } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/Map';
@@ -13,12 +14,13 @@ const BottomTabNavigator = memo(() => {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="Map"
+      initialRouteName='Map'
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-      }}>
+        tabBarActiveTintColor: Colors[colorScheme].tint
+      }}
+    >
       <BottomTab.Screen
-        name="Map"
+        name='Map'
         component={TabOneScreen}
         options={() => ({
           title: 'Mapa',
