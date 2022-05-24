@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -8,71 +8,12 @@ import { RootTabScreenProps } from '../../types';
 import useLocation from '~/hooks/useLocation';
 import useRequest from '~/hooks/useRequest';
 
-import { Card } from '~/components/Card';
+import Card from '~/components/Card';
 import theme from '~/global/theme';
-import { ModalView } from '~/components/ModalView';
-
-export const Images = [
-  { uri: 'https://i.imgur.com/sNam9iJ.jpg' },
-  { uri: 'https://i.imgur.com/N7rlQYt.jpg' },
-  { uri: 'https://i.imgur.com/UDrH0wm.jpg' },
-  { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
-];
-
-const state = {
-  markers: [
-    {
-      coordinate: {
-        latitude: -23.20618,
-        longitude: -47.29654
-      },
-      title: 'Best Place',
-      description: 'This is the best place in Portland',
-      image: Images[0]
-    },
-    {
-      coordinate: {
-        latitude: -23.20595,
-        longitude: -47.29655
-      },
-      title: 'Second Best Place',
-      description: 'This is the second best place in Portland',
-      image: Images[1]
-    },
-    {
-      coordinate: {
-        latitude: 45.5230786,
-        longitude: -122.6701034
-      },
-      title: 'Third Best Place',
-      description: 'This is the third best place in Portland',
-      image: Images[2]
-    },
-    {
-      coordinate: {
-        latitude: 45.521016,
-        longitude: -122.6561917
-      },
-      title: 'Fourth Best Place',
-      description: 'This is the fourth best place in Portland',
-      image: Images[3]
-    }
-  ],
-  region: {
-    latitude: 45.52220671242907,
-    longitude: -122.6653281029795,
-    latitudeDelta: 0,
-    longitudeDelta: 0.0021
-  }
-};
-
-type CoordinateType = {
-  latitude: number;
-  longitude: number;
-};
+import ModalView from '~/components/ModalView';
+import { IPlace } from '~/interfaces/map';
 
 export type PositionType = {
-  // coordinate: CoordinateType;
   title: string;
   description: string;
   image?: string;
@@ -80,23 +21,38 @@ export type PositionType = {
 
 const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   const [showCards, setShowCards] = useState(false);
-  const [translate, setTranslate] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [place, setPlace] = useState<IPlace | null>(null);
+  const [initialRegion] = useState({
+    latitude: -23.20618,
+    longitude: -47.29654,
+    latitudeDelta: 0,
+    longitudeDelta: 0.0041
+  });
 
+  const MapRef = useRef<MapView>(null);
+  const location = useLocation();
   const { width } = Dimensions.get('window');
+
   // const CARD_HEIGHT = 220;
   const CARD_WIDTH = width - 7.5;
   // const SPACING_FOR_CARD_INSET = width * 0.1 - 25;
-  const [modalVisible, setModalVisible] = useState(false);
-  const [infoModal, setInfoModal] = useState<PositionType | null>(null);
 
   let mapIndex = 0;
   const animation = new Animated.Value(0);
 
+  const { response: places } = useRequest<IPlace[]>(
+    '/places',
+    'GET'
+  ) ?? [];
+
   useEffect(() => {
     animation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3);
-      if (index >= state.markers.length) {
-        index = state.markers.length - 1;
+      const length = places?.length ?? 0;
+
+      if (index >= length) {
+        index = length - 1;
       }
       if (index <= 0) {
         index = 0;
@@ -106,8 +62,8 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
         if (mapIndex !== index && !!places) {
           mapIndex = index;
           const location = places[index].location;
-          _map.current &&
-            _map.current.animateToRegion(
+          MapRef.current &&
+            MapRef.current.animateToRegion(
               {
                 ...location,
                 latitudeDelta: 0,
@@ -120,7 +76,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     });
   });
 
-  const interpolations = state.markers.map((marker, index) => {
+  const interpolations = useMemo(() => places?.map((marker, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
 
     const scale = animation.interpolate({
@@ -130,18 +86,17 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     });
 
     return { scale };
-  });
+  }), [places]);
 
-  function handleShowModal(title: string, description: string, image?: string) {
-    const body = { image, title, description };
-    setInfoModal(body);
+  const handleShowModal = useCallback((place: IPlace) => {
+    setPlace(place);
     setModalVisible(true);
-  }
+  }, []);
 
-  function handleHideModal() {
+  const handleHideModal = useCallback(() => {
     setModalVisible(false);
-    setInfoModal(null);
-  }
+    setPlace(null);
+  }, []);
 
   // const onMarkerPress = (mapEventData) => {
   //   const markerID = mapEventData._targetInst.return.key;
@@ -154,20 +109,9 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   //   _scrollView.current?.scrollTo({x: x, y: 0, animated: true});
   // }
 
-  const _map = useRef<MapView>(null);
-
-  const [initialRegion] = useState({
-    latitude: -23.20618,
-    longitude: -47.29654,
-    latitudeDelta: 0,
-    longitudeDelta: 0.0041
-  });
-
-  const location = useLocation();
-
   useEffect(() => {
     if (!showCards) {
-      _map.current?.animateToRegion({
+      MapRef.current?.animateToRegion({
         latitude: location?.latitude,
         longitude: location?.longitude,
         latitudeDelta: 0,
@@ -176,28 +120,18 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     }
   }, [showCards, location]);
 
-  const { response: places } = useRequest<{ name: string; location: { latitude: number; longitude: number } }[]>(
-    '/places',
-    'GET'
-  );
-
   return (
     <View style={styles.container}>
       <MapView
-        ref={_map}
+        ref={MapRef}
         style={styles.map}
-        region={{
-          latitude: -23.20618,
-          longitude: -47.29654,
-          latitudeDelta: 0,
-          longitudeDelta: 0.0021
-        }}
+        initialRegion={initialRegion}
       >
         {places?.map((place, index) => {
           const scaleStyle = {
             transform: [
               {
-                scale: interpolations[index].scale
+                scale: interpolations?.[index].scale
               }
             ]
           };
@@ -213,7 +147,6 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
       <TouchableOpacity style={styles.btnShowCards} onPress={() => setShowCards(!showCards)}>
         {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />}
-        {/* {showCards ? <Text>1</Text> : <Text>2</Text>} */}
       </TouchableOpacity>
 
       {showCards && (
@@ -253,7 +186,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
                   key={index}
                   title={place.name}
                   description={'tteste'}
-                  // image={place.image}
+                  place={place}
                   first={index == 0 ? true : false}
                   handleShowModal={handleShowModal}
                 />
@@ -262,7 +195,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           </View>
         </Animated.ScrollView>
       )}
-      <ModalView infoModal={infoModal} isVisible={modalVisible} handleHideModal={handleHideModal} />
+      <ModalView place={place} isVisible={modalVisible} handleHideModal={handleHideModal} />
     </View>
   );
 });

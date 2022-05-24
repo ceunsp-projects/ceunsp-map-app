@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Image, Text, TouchableOpacity } from 'react-native';
+import { IPlace } from '~/interfaces/map';
 
 import { styles } from './styles';
 
@@ -12,7 +13,8 @@ interface CardProps {
   description: string;
   image?: ImageProps;
   first: boolean;
-  handleShowModal: (title: string, description: string, image?: string) => void;
+  place: IPlace;
+  handleShowModal: (place: IPlace) => void;
 }
 
 export const Images = [
@@ -22,13 +24,13 @@ export const Images = [
   { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
 ];
 
-export function Card({ title, description, image, first, handleShowModal }: CardProps) {
+const Card = memo<CardProps>(({ title, description, image, first, place, handleShowModal }) => {
+  const onShowModal = useCallback(() => handleShowModal(place), []);
+
   return (
     <TouchableOpacity
       style={first ? styles.firstContainer : styles.container}
-      onPress={() => {
-        handleShowModal(title, description, image?.uri);
-      }}
+      onPress={onShowModal}
     >
       {!!image && <Image source={image} style={styles.img} />}
       <View style={styles.cardDescription}>
@@ -37,4 +39,6 @@ export function Card({ title, description, image, first, handleShowModal }: Card
       </View>
     </TouchableOpacity>
   );
-}
+})
+
+export default Card;

@@ -1,72 +1,45 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Image, ScrollView, Text, SafeAreaView } from 'react-native';
 import Modal from 'react-native-modal';
-import { PositionType } from '~/screens/Map';
+import useRequest from '~/hooks/useRequest';
+import { IPlace, IPlaceDetails } from '~/interfaces/map';
 
 import { styles } from './styles';
 
 interface ModalViewProps {
   isVisible: boolean;
-  infoModal: PositionType | null;
+  place: IPlace | null;
   handleHideModal: () => void;
 }
 
-export function ModalView({ isVisible, handleHideModal, infoModal }: ModalViewProps) {
-  return (
-    <View>
-      <Modal
-        style={{ alignItems: 'center' }}
-        isVisible={isVisible}
-        swipeDirection='down'
-        onBackdropPress={handleHideModal}
-        onSwipeComplete={handleHideModal}
-      >
-        <View style={styles.cardModal}>
-          {infoModal && <Image style={styles.img} source={{ uri: infoModal.image }} />}
+const ModalView = memo<ModalViewProps>(({ isVisible, handleHideModal, place }) => {
+  if (!place?._id) return null;
 
-          <ScrollView style={styles.scrollView} scrollEventThrottle={400}>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+  const { response: placeDetails } = useRequest<IPlaceDetails>(`/place/${place._id}`, 'GET');
+
+  return (
+    <Modal
+      style={{ alignItems: 'center' }}
+      isVisible={isVisible}
+      swipeDirection='down'
+      onBackdropPress={handleHideModal}
+      onSwipeComplete={handleHideModal}
+      animationInTiming={700}
+      animationOutTiming={700}
+    >
+      <View style={styles.cardModal}>
+        {/* {place && <Image style={styles.img} source={{ uri: place.image }} />} */}
+
+        <ScrollView style={styles.scrollView} scrollEventThrottle={400}>
+          {placeDetails?.items.map(item => (
+            <View key={item} style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>{item}</Text>
             </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-            <View style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
-            </View>
-          </ScrollView>
-        </View>
-      </Modal>
-    </View>
+          ))}
+        </ScrollView>
+      </View>
+    </Modal>
   );
-}
+});
+
+export default ModalView;
