@@ -6,8 +6,7 @@ import { LoginPage } from './LoginPage';
 const TabTwoScreen = memo(() => {
   return (
     <View style={styles.container}>
-      {/* <Camera /> */}
-      <LoginPage />
+      <Camera />
     </View>
   );
 });

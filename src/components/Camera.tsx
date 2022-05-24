@@ -4,6 +4,7 @@ import * as cocossd from '@tensorflow-models/coco-ssd';
 import * as tf from '@tensorflow/tfjs';
 import { Camera as ExpoCamera } from 'expo-camera';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import theme from '~/global/theme';
 
 const Camera = memo(() => {
   const CameraRef = useRef<ExpoCamera>(null);
@@ -83,7 +84,7 @@ const Camera = memo(() => {
       autoFocus={ExpoCamera.Constants.AutoFocus.on}
     >
       <TouchableOpacity onPress={onPress} style={styles.button}>
-        <Text style={{ color: 'white' }}>Hello</Text>
+        <Text style={styles.buttonText}>Print</Text>
       </TouchableOpacity>
     </ExpoCamera>
   );
@@ -95,10 +96,21 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 0.1,
+    width: '100%',
+    height: 50,
+    position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red'
+    backgroundColor: theme.colors.red,
+    bottom: 0,
+    left: 0
   },
+  buttonText: {
+    color: theme.colors.text,
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+
   containerNotHasPermission: { flex: 1, backgroundColor: 'black' },
   textNotHasPermission: { color: 'white' }
 });

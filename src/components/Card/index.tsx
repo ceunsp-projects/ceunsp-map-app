@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 
 import { styles } from './styles';
 
@@ -10,9 +10,9 @@ type ImageProps = {
 interface CardProps {
   title: string;
   description: string;
-  latitude: number;
   image: ImageProps;
   first: boolean;
+  handleShowModal: (image: string, title: string, description: string) => void;
 }
 
 export const Images = [
@@ -22,15 +22,19 @@ export const Images = [
   { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
 ];
 
-export function Card({ title, description, latitude, image, first }: CardProps) {
+export function Card({ title, description, image, first, handleShowModal }: CardProps) {
   return (
-    <View style={first ? styles.firstContainer : styles.container}>
+    <TouchableOpacity
+      style={first ? styles.firstContainer : styles.container}
+      onPress={() => {
+        handleShowModal(image.uri, title, description);
+      }}
+    >
       <Image source={image} style={styles.img} />
       <View style={styles.cardDescription}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.description}>{description}</Text>
-        <Text style={styles.description}>{latitude}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

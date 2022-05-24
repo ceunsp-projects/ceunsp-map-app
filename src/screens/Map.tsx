@@ -8,6 +8,7 @@ import { RootTabScreenProps } from '../../types';
 
 import { Card } from '~/components/Card';
 import theme from '~/global/theme';
+import { ModalView } from '~/components/ModalView';
 
 export const Images = [
   { uri: 'https://i.imgur.com/sNam9iJ.jpg' },
@@ -58,19 +59,33 @@ const state = {
   region: {
     latitude: 45.52220671242907,
     longitude: -122.6653281029795,
-    latitudeDelta: 0.04864195044303443,
-    longitudeDelta: 0.040142817690068
+    latitudeDelta: 0,
+    longitudeDelta: 0.0021
   }
+};
+
+type CoordinateType = {
+  latitude: number;
+  longitude: number;
+};
+
+export type PositionType = {
+  // coordinate: CoordinateType;
+  title: string;
+  description: string;
+  image: string;
 };
 
 const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   const [showCards, setShowCards] = useState(false);
   const [translate, setTranslate] = useState(0);
 
-  const { width, height } = Dimensions.get('window');
+  const { width } = Dimensions.get('window');
   // const CARD_HEIGHT = 220;
   const CARD_WIDTH = width - 7.5;
   // const SPACING_FOR_CARD_INSET = width * 0.1 - 25;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [infoModal, setInfoModal] = useState<PositionType | null>(null);
 
   let mapIndex = 0;
   const animation = new Animated.Value(0);
@@ -93,8 +108,8 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
             _map.current.animateToRegion(
               {
                 ...coordinate,
-                latitudeDelta: state.region.latitudeDelta,
-                longitudeDelta: state.region.longitudeDelta
+                latitudeDelta: 0,
+                longitudeDelta: 0.0021
               },
               500
             );
@@ -114,6 +129,17 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
     return { scale };
   });
+
+  function handleShowModal(image: string, title: string, description: string) {
+    const body = { image, title, description };
+    setInfoModal(body);
+    setModalVisible(true);
+  }
+
+  function handleHideModal() {
+    setModalVisible(false);
+    setInfoModal(null);
+  }
 
   // const onMarkerPress = (mapEventData) => {
   //   const markerID = mapEventData._targetInst.return.key;
@@ -151,7 +177,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           return (
             <Marker key={index} coordinate={marker.coordinate}>
               <Animated.View style={[styles.ring]}>
-                <View style={styles.marker} />
+                <View style={[styles.marker]} />
               </Animated.View>
             </Marker>
           );
@@ -199,15 +225,16 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
                   key={index}
                   title={marker.title}
                   description={marker.description}
-                  latitude={marker.coordinate.latitude}
                   image={marker.image}
                   first={index == 0 ? true : false}
+                  handleShowModal={handleShowModal}
                 />
               );
             })}
           </View>
         </Animated.ScrollView>
       )}
+      <ModalView infoModal={infoModal} isVisible={modalVisible} handleHideModal={handleHideModal} />
     </View>
   );
 });
