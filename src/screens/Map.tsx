@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
 import MapView, { Marker } from 'react-native-maps';
+=======
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, StyleSheet, Text } from 'react-native';
+import MapView, { Callout, Marker, Polyline } from 'react-native-maps';
+>>>>>>> 3d9ecdc3d2c7cc99f45538b9c1e7cf60b954558b
 
 import { View } from '../components/Themed';
 import { RootTabScreenProps } from '../../types';
+import useLocation from '~/hooks/useLocation';
+import useRequest from '~/hooks/useRequest';
 
 import { Card } from '~/components/Card';
 import theme from '~/global/theme';
@@ -154,6 +162,28 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
   const _map = useRef<MapView>(null);
 
+  const MapRef = useRef<MapView>(null);
+  // const [destination, setDestination] = useState<any[]>([]);
+  const [initialRegion] = useState({
+    latitude: -23.20618,
+    longitude: -47.29654,
+    latitudeDelta: 0,
+    longitudeDelta: 0.0041,
+  });
+
+  const location = useLocation();
+
+  useEffect(() => {
+    MapRef.current?.animateToRegion({
+      latitude: initialRegion?.latitude,
+      longitude: initialRegion?.longitude,
+      latitudeDelta: 0,
+      longitudeDelta: 0.0051,
+    });
+  }, []);
+
+  const { response: places } = useRequest<{ name: string, location: { latitude: number, longitude: number } }[]>('/places', 'GET');
+
   return (
     <View style={styles.container}>
       <MapView
@@ -186,6 +216,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
       <TouchableOpacity style={styles.btnShowCards} onPress={() => setShowCards(!showCards)}>
         {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />}
+        {/* {showCards ? <Text>1</Text> : <Text>2</Text>} */}
       </TouchableOpacity>
 
       {showCards && (
