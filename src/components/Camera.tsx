@@ -5,12 +5,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import useRequest from '~/hooks/useRequest';
 import useLocation from '~/hooks/useLocation';
 import placeService from '~/services/place';
+import useError from '~/hooks/useError';
 
 const Camera = memo(() => {
   const CameraRef = useRef<ExpoCamera>(null);
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [type] = useState<'front' | 'back'>(ExpoCamera.Constants.Type.back);
-  const [place, setPlace] = useState<CameraCapturedPicture>();
+  const { onError } = useError();
 
   const location = useLocation();
 
@@ -18,23 +19,26 @@ const Camera = memo(() => {
     (async () => {
       const { status } = await ExpoCamera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
+      CameraRef.current?.resumePreview();
     })();
   }, []);
 
   const onPress = async () => {
-    const photo = await CameraRef.current?.takePictureAsync();
+    try {
+      const photo = await CameraRef.current?.takePictureAsync();
 
-    if (!photo?.uri) return;
+      if (!photo?.uri) return;
 
-    const teste = await placeService.create(photo, location);
-    console.log(teste);
+      const response = await placeService.create(photo, location);
+      console.log('AQUIIII', response);
+    } catch (error: any) {
+      onError(error);
+    }
   };
-
-
 
   return !hasPermission ? (
     <View style={styles.containerNotHasPermission}>
-      <Text style={styles.textNotHasPermission}></Text>
+      <Text style={styles.textNotHasPermission}>Precisamos de sua permissão para acessar a camera :(</Text>
     </View>
   ) : (
     <ExpoCamera
@@ -50,6 +54,7 @@ const Camera = memo(() => {
     </ExpoCamera>
   );
 });
+
 const styles = StyleSheet.create({
   camera: {
     flex: 1,
