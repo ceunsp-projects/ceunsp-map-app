@@ -186,6 +186,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
       <TouchableOpacity style={styles.btnShowCards} onPress={() => setShowCards(!showCards)}>
         {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />}
+        {/* {showCards ? <Text>1</Text> : <Text>2</Text>} */}
       </TouchableOpacity>
 
       {showCards && (
