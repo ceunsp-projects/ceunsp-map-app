@@ -1,12 +1,18 @@
 import { useCallback, useRef, memo, useEffect, useState } from 'react';
 
-import { Camera as ExpoCamera } from 'expo-camera';
+import { Camera as ExpoCamera, CameraCapturedPicture } from 'expo-camera';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import useRequest from '~/hooks/useRequest';
+import useLocation from '~/hooks/useLocation';
+import placeService from '~/services/place';
 
 const Camera = memo(() => {
   const CameraRef = useRef<ExpoCamera>(null);
   const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const [type] = useState<'front' | 'back'>(ExpoCamera.Constants.Type.front);
+  const [type] = useState<'front' | 'back'>(ExpoCamera.Constants.Type.back);
+  const [place, setPlace] = useState<CameraCapturedPicture>();
+
+  const location = useLocation();
 
   useEffect(() => {
     (async () => {
@@ -15,13 +21,16 @@ const Camera = memo(() => {
     })();
   }, []);
 
-  const onPress = useCallback(async () => {
+  const onPress = async () => {
     const photo = await CameraRef.current?.takePictureAsync();
 
     if (!photo?.uri) return;
 
-    console.log(photo);
-  }, []);
+    const teste = await placeService.create(photo, location);
+    console.log(teste);
+  };
+
+
 
   return !hasPermission ? (
     <View style={styles.containerNotHasPermission}>
@@ -36,14 +45,15 @@ const Camera = memo(() => {
       autoFocus={ExpoCamera.Constants.AutoFocus.on}
     >
       <TouchableOpacity onPress={onPress} style={styles.button}>
-        <Text style={{ color: 'white' }}>Hello</Text>
+        <Text style={{ color: 'white' }}>Tire uma foto do seu bloco</Text>
       </TouchableOpacity>
     </ExpoCamera>
   );
 });
 const styles = StyleSheet.create({
   camera: {
-    flex: 1
+    flex: 1,
+    justifyContent: 'flex-end'
   },
   button: {
     flex: 0.1,
