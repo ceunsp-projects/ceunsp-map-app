@@ -4,14 +4,14 @@ import theme from '~/global/theme';
 export const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: theme.colors.red,
+    backgroundColor: theme.colors.navy_blue,
     width: Dimensions.get('window').width - 15,
     borderRadius: 5,
     marginRight: 7.5
   },
   firstContainer: {
     alignItems: 'center',
-    backgroundColor: theme.colors.red,
+    backgroundColor: theme.colors.navy_blue,
     width: Dimensions.get('window').width - 15,
     borderRadius: 5,
     marginHorizontal: 7.5
@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
     padding: 7
   },
   title: {
-    marginBottom: 5,
+    marginBottom: 10,
     fontSize: 18,
     alignSelf: 'center',
     color: theme.colors.text,
@@ -35,7 +35,8 @@ export const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: theme.colors.text
+    color: theme.colors.text,
+    alignSelf: 'center'
   },
   icon: {
     color: 'black'

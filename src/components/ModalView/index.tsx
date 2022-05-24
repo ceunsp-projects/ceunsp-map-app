@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Image, ScrollView, Text, SafeAreaView } from 'react-native';
 import Modal from 'react-native-modal';
 import { PositionType } from '~/screens/Map';
 
@@ -21,13 +21,51 @@ export function ModalView({ isVisible, handleHideModal, infoModal }: ModalViewPr
         onBackdropPress={handleHideModal}
         onSwipeComplete={handleHideModal}
       >
-        <View
-          style={{
-            backgroundColor: 'red',
-            width: 240,
-            height: 240
-          }}
-        ></View>
+        <View style={styles.cardModal}>
+          {infoModal && <Image style={styles.img} source={{ uri: infoModal.image }} />}
+
+          <ScrollView style={styles.scrollView} scrollEventThrottle={400}>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+            <View style={styles.imgItens}>
+              <Text style={styles.imgItensTxt}>Objeto identificado na imagem</Text>
+            </View>
+          </ScrollView>
+        </View>
       </Modal>
     </View>
   );
