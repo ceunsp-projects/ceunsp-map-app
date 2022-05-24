@@ -1,6 +1,7 @@
 export interface IPlace {
   _id: number;
   name: string;
+  pictures: string[];
   location: {
     latitude: number;
     longitude: number;
