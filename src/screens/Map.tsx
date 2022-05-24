@@ -1,17 +1,17 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, Text } from 'react-native';
 import MapView, { Callout, Marker, Polyline } from 'react-native-maps';
 
 import { View } from '../components/Themed';
 import { RootTabScreenProps } from '../../types';
 import useLocation from '~/hooks/useLocation';
-import MapViewDirections from 'react-native-maps-directions';
+import useRequest from '~/hooks/useRequest';
 
 const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
   const MapRef = useRef<MapView>(null);
-  const [destination, setDestination] = useState<any[]>([]);
-  const [initialRegion, setInitialRegion] = useState({
+  // const [destination, setDestination] = useState<any[]>([]);
+  const [initialRegion] = useState({
     latitude: -23.20618,
     longitude: -47.29654,
     latitudeDelta: 0,
@@ -19,22 +19,17 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   });
 
   const location = useLocation();
-  console.log(location);
 
   useEffect(() => {
-    if (!!location) {
-      MapRef.current?.animateToRegion({
-        latitude: location?.coords?.latitude,
-        longitude: location?.coords?.longitude,
-        latitudeDelta: 0,
-        longitudeDelta: 0.0051,
-      });
+    MapRef.current?.animateToRegion({
+      latitude: initialRegion?.latitude,
+      longitude: initialRegion?.longitude,
+      latitudeDelta: 0,
+      longitudeDelta: 0.0051,
+    });
+  }, []);
 
-      setDestination([initialRegion, location?.coords]);
-    }
-  }, [location]);
-
-  console.log(destination)
+  const { response: places } = useRequest<{ name: string, location: { latitude: number, longitude: number } }[]>('/places', 'GET');
 
   return (
     <View style={styles.container}>
@@ -55,32 +50,30 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
             pinColor='black'
             coordinate={{
               latitude: location?.coords?.latitude,
-              longitude: location?.coords?.longitude,
-              latitudeDelta: 0.015,
-              longitudeDelta: Dimensions.get('window').width / Dimensions.get('window').height,
-            }}>
+              longitude: location?.coords?.longitude
+            }}
+          >
             <Callout>
               <Text>Você está aqui</Text>
             </Callout>
           </Marker>
         )}
 
-        {!!location?.coords?.latitude && (
-          // <Polyline
-          //   coordinates={[
-          //     {
-          //       latitude: -23.20618,
-          //       longitude: -47.29654,
-          //     },
-          //     {
-          //       latitude: location?.coords?.latitude ?? 0,
-          //       longitude: location?.coords?.longitude ?? 0,
-          //     }
-          //   ]}
-          //   strokeColor="#000"
-          //   strokeColors={['#7F0000']}
-          //   strokeWidth={6}
-          // />
+        {places?.map(place => (
+          <Marker
+            key={place.name}
+            pinColor='black'
+            coordinate={{
+              latitude: place.location.latitude,
+              longitude: place.location.longitude
+            }}>
+            <Callout>
+              <Text>{place.name}</Text>
+            </Callout>
+          </Marker>
+        ))}
+
+        {/* {!!location?.coords?.latitude && (
           <MapViewDirections apikey='AIzaSyB3oypWdPdf3nkiSxDfkBos7oDmdQoXAvE' origin={
             {
               latitude: -23.20618,
@@ -93,7 +86,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
               longitude: location?.coords?.longitude ?? 0,
             }
           } />
-        )}
+        )} */}
       </MapView>
     </View>
   );
