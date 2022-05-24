@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
 import MapView, { Marker } from 'react-native-maps';
 
