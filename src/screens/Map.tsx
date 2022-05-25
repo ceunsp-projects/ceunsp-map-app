@@ -120,7 +120,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
         longitudeDelta: 0.0051
       });
     }
-  }, [showCards, location]);
+  }, [location]);
 
   return (
     <View style={styles.container}>
@@ -151,7 +151,8 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
       </MapView>
 
       <TouchableOpacity style={styles.btnShowCards} onPress={() => setShowCards(!showCards)}>
-        {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />}
+        {/* {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />} */}
+        {showCards ? <Text>Fechar</Text> : <Text>Abrir</Text>}
       </TouchableOpacity>
 
       {showCards && (
