@@ -1,5 +1,6 @@
 import axios from 'axios';
 import useError from '~/hooks/useError';
+import { BASE_ENDPOINT } from '~/settings';
 
 axios.interceptors.response.use(
   res => res,
@@ -18,7 +19,7 @@ axios.interceptors.request.use(
 );
 
 const apiService = axios.create({
-  baseURL: 'http://192.168.0.17:3333'
+  baseURL: BASE_ENDPOINT
 })
 
 export default apiService;

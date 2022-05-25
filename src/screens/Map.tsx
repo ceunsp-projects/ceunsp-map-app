@@ -41,7 +41,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   let mapIndex = 0;
   const animation = new Animated.Value(0);
 
-  const { response: places } = useRequest<IPlace[]>(
+  const { response: places, error } = useRequest<IPlace[]>(
     '/places',
     'GET'
   ) ?? [];

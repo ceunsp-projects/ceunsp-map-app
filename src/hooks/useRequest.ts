@@ -14,11 +14,17 @@ export default function useRequest<T = any>(url: string, method: Method, data?: 
         const axiosResponse = await apiService.request({
           url,
           method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
           ...(method.toUpperCase() === 'GET' ? { params: data } : { data })
         });
 
         setResponse(axiosResponse.data);
       } catch (error: any) {
+        console.log('ERROROOROR', JSON.stringify(error))
+
         setError(error);
       } finally {
         setIsLoading(false);

@@ -1,4 +1,6 @@
-import { ENV_BASE_ENDPOINT } from '@env';
+import Constants from 'expo-constants';
+
+const env = Constants?.manifest?.extra ?? {};
 
 export const IS_DEV = __DEV__ ? true : false;
-export const BASE_ENDPOINT = ENV_BASE_ENDPOINT ?? 'http://localhost:3333';
+export const BASE_ENDPOINT = env.ENV_BASE_ENDPOINT ?? 'http://localhost:3333';
