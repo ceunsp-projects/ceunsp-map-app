@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
 import MapView, { Marker } from 'react-native-maps';
 
@@ -12,6 +12,7 @@ import Card from '~/components/Card';
 import theme from '~/global/theme';
 import ModalView from '~/components/ModalView';
 import { IPlace } from '~/interfaces/map';
+import placeService from '~/services/place';
 
 export type PositionType = {
   title: string;
@@ -41,7 +42,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   let mapIndex = 0;
   const animation = new Animated.Value(0);
 
-  const { response: places } = useRequest<IPlace[]>('/places', 'GET') ?? [];
+  const { response: places } = useRequest<IPlace[]>(() => placeService.list(), []);
 
   useEffect(() => {
     animation.addListener(({ value }) => {

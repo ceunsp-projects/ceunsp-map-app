@@ -7,9 +7,11 @@ import useRequest from '~/hooks/useRequest';
 import useLocation from '~/hooks/useLocation';
 import placeService from '~/services/place';
 import useError from '~/hooks/useError';
+import { useIsFocused } from '@react-navigation/native';
 
 const Camera = memo(() => {
   const CameraRef = useRef<ExpoCamera>(null);
+  const isFocused = useIsFocused();
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [type] = useState<'front' | 'back'>(ExpoCamera.Constants.Type.back);
   const { onError } = useError();
@@ -25,23 +27,26 @@ const Camera = memo(() => {
   }, []);
 
   const onPress = async () => {
-    try {
-      const photo = await CameraRef.current?.takePictureAsync();
+    // try {
+    const photo = await CameraRef.current?.takePictureAsync();
 
-      if (!photo?.uri) return;
+    if (!photo?.uri) return;
 
-      const response = await placeService.create(photo, location);
-      console.log('AQUIIII', response);
-    } catch (error: any) {
-      onError(error);
-    }
+    const response = await placeService.create(photo, location);
+
+    console.log('AQUIIII', response);
+    // } catch (error: any) {
+    //   const message = error?.response?.data?.message ?? error;
+    //   console.log(JSON.stringify(error.response), message);
+    //   onError(message);
+    // }
   };
 
   return !hasPermission ? (
     <View style={styles.containerNotHasPermission}>
       <Text style={styles.textNotHasPermission}>Precisamos de sua permissão para acessar a camera :(</Text>
     </View>
-  ) : (
+  ) : isFocused ? (
     <ExpoCamera
       ref={CameraRef}
       ratio='16:9'
@@ -53,7 +58,7 @@ const Camera = memo(() => {
         <Text style={{ color: 'white' }}>Tire uma foto do seu bloco</Text>
       </TouchableOpacity>
     </ExpoCamera>
-  );
+  ) : <View />;
 });
 
 const styles = StyleSheet.create({

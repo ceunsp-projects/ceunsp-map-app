@@ -3,6 +3,8 @@ import { View, Image, ScrollView, Text, SafeAreaView } from 'react-native';
 import Modal from 'react-native-modal';
 import useRequest from '~/hooks/useRequest';
 import { IPlace, IPlaceDetails } from '~/interfaces/map';
+import apiService from '~/services/api';
+import placeService from '~/services/place';
 
 import { styles } from './styles';
 
@@ -15,7 +17,7 @@ interface ModalViewProps {
 const ModalView = memo<ModalViewProps>(({ isVisible, handleHideModal, place }) => {
   if (!place?._id) return null;
 
-  const { response: placeDetails } = useRequest<IPlaceDetails>(`/place/${place._id}`, 'GET');
+  const { response: placeDetails } = useRequest<IPlaceDetails>(() => placeService.details(place?._id), []);
 
   return (
     <Modal

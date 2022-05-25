@@ -5,10 +5,16 @@ import 'react-native-gesture-handler';
 import useCachedResources from './src/hooks/useCachedResources';
 import useColorScheme from './src/hooks/useColorScheme';
 import Navigation from './src/navigation';
+import useError from '~/hooks/useError';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  const { onError } = useError();
+
+  ErrorUtils.setGlobalHandler((error, isFatal) => {
+    onError(error)
+  });
 
   if (!isLoadingComplete) {
     return null;

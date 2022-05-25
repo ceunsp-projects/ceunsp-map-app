@@ -1,36 +1,32 @@
-import { AxiosError, Method } from 'axios';
+import { AxiosResponse } from 'axios';
 import { useEffect, useMemo, useState } from 'react';
-import apiService from '~/services/api';
+import useError from './useError';
 
-export default function useRequest<T = any>(url: string, method: Method, data?: any) {
+export default function useRequest<T = any>(callback: () => Promise<AxiosResponse<T>>, deps: React.DependencyList) {
   const [response, setResponse] = useState<T>();
-  const [error, setError] = useState<AxiosError>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { error, onError } = useError();
 
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const axiosResponse = await apiService.request({
-          url,
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          },
-          ...(method.toUpperCase() === 'GET' ? { params: data } : { data })
-        });
+    let isSubscribed = true;
+    setIsLoading(true);
 
-        setResponse(axiosResponse.data);
-      } catch (error: any) {
-        console.log('ERROROOROR', JSON.stringify(error))
+    callback()
+      .then(result => {
+        if (!isSubscribed) return;
+        setResponse(result?.data);
+      })
+      .catch(err => {
+        if (!isSubscribed) return;
+        const message = err?.response?.data?.message ?? error;
+        onError(message);
+      })
+      .finally(() => setIsLoading(false));
 
-        setError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [url, method, data]);
+    return () => {
+      isSubscribed = false;
+    };
+  }, deps);
 
   return useMemo(() => ({ response, error, isLoading }), [response, error, isLoading]);
 }

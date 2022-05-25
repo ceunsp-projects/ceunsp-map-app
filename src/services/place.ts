@@ -3,6 +3,14 @@ import apiService from './api';
 import { LocationObject } from 'expo-location';
 
 class PlaceService {
+  async list() {
+    return apiService.get('/places');
+  }
+
+  async details(id?: number) {
+    return apiService.get(`/place/${id}`);
+  }
+
   async create(photo: CameraCapturedPicture, location?: LocationObject) {
     const data = new FormData();
     const filename = photo.uri.split('/').pop();
@@ -17,11 +25,7 @@ class PlaceService {
 
     console.log({ location: location?.coords, photo });
 
-    return apiService.post('/place/save', data, {
-      headers: {
-        'Content-type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
-      }
-    });
+    return apiService.post('/place/save', data);
   }
 }
 
