@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
 import MapView, { Marker } from 'react-native-maps';
 
@@ -41,10 +41,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   let mapIndex = 0;
   const animation = new Animated.Value(0);
 
-  const { response: places } = useRequest<IPlace[]>(
-    '/places',
-    'GET'
-  ) ?? [];
+  const { response: places } = useRequest<IPlace[]>('/places', 'GET') ?? [];
 
   useEffect(() => {
     animation.addListener(({ value }) => {
@@ -76,17 +73,21 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     });
   });
 
-  const interpolations = useMemo(() => places?.map((marker, index) => {
-    const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
+  const interpolations = useMemo(
+    () =>
+      places?.map((marker, index) => {
+        const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
 
-    const scale = animation.interpolate({
-      inputRange,
-      outputRange: [1, 1.5, 1],
-      extrapolate: 'clamp'
-    });
+        const scale = animation.interpolate({
+          inputRange,
+          outputRange: [1, 1.5, 1],
+          extrapolate: 'clamp'
+        });
 
-    return { scale };
-  }), [places]);
+        return { scale };
+      }),
+    [places]
+  );
 
   const handleShowModal = useCallback((place: IPlace) => {
     setPlace(place);
@@ -123,6 +124,9 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   return (
     <View style={styles.container}>
       <MapView
+        showsCompass={true}
+        showsMyLocationButton={true}
+        showsUserLocation={true}
         ref={MapRef}
         style={styles.map}
         initialRegion={initialRegion}
