@@ -1,11 +1,11 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import theme from '~/global/theme';
 
 export const styles = StyleSheet.create({
   cardModal: {
     backgroundColor: theme.colors.navy_blue,
     width: '100%',
-    height: 500,
+    height: Dimensions.get('screen').height * 0.8,
     borderRadius: 4
   },
   img: {
@@ -34,6 +34,7 @@ export const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 6,
     marginBottom: 6,
+    paddingHorizontal: 5,
     backgroundColor: theme.colors.text,
     padding: 4,
     color: theme.colors.navy_blue,

@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { View, Image, ScrollView, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { Fragment, memo } from 'react';
+import { View, Image, ScrollView, Text, SafeAreaView, TouchableOpacity, TouchableNativeFeedbackBase, TouchableWithoutFeedback } from 'react-native';
 import Modal from 'react-native-modal';
 import useRequest from '~/hooks/useRequest';
 import { IPlace, IPlaceDetails } from '~/interfaces/map';
@@ -32,14 +32,11 @@ const ModalView = memo<ModalViewProps>(({ isVisible, handleHideModal, place }) =
     >
       <View style={styles.cardModal}>
         <PhotoGrid place={place} />
-        {/* {place && <Image style={styles.img} source={{ uri: place.image }} />} */}
 
         <ScrollView style={styles.scrollView} scrollEventThrottle={400}>
-          <TouchableOpacity style={styles.touchableOpacity}>
+          <TouchableOpacity activeOpacity={1} onPress={() => null} style={styles.touchableOpacity}>
             {placeDetails?.items.map(item => (
-              // <View key={item} style={styles.imgItens}>
-              <Text style={styles.imgItensTxt}>{item}</Text>
-              // </View>
+              <Text key={item} style={styles.imgItensTxt}>{item}</Text>
             ))}
           </TouchableOpacity>
         </ScrollView>
