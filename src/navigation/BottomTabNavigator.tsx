@@ -25,17 +25,18 @@ const BottomTabNavigator = memo(() => {
         component={TabOneScreen}
         options={() => ({
           title: 'Mapa',
-          tabBarIcon: ({ color }) => <TabBarIcon name="map-o" color={color} />,
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name='map-o' color={color} />
         })}
       />
       <BottomTab.Screen
-        name="Picture"
+        name='Picture'
         component={TabTwoScreen}
         initialParams={{ newPlace: null }}
         options={{
           title: 'Camera',
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />
         }}
       />
       <BottomTab.Screen

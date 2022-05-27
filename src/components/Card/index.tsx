@@ -19,15 +19,11 @@ interface CardProps {
   onLayout: (event: LayoutChangeEvent) => void;
 }
 
-const Card = memo<CardProps>(({ key, title, description, image, first, place, handleShowModal, onLayout }) => {
+const Card = memo<CardProps>(({ title, description, image, first, place, handleShowModal }) => {
   const onShowModal = useCallback(() => handleShowModal(place), []);
 
   return (
-    <TouchableOpacity
-      style={first ? styles.firstContainer : styles.container}
-      onPress={onShowModal}
-      onLayout={onLayout}
-    >
+    <TouchableOpacity style={first ? styles.firstContainer : styles.container} onPress={onShowModal}>
       {!!image && <Image source={image} style={styles.img} />}
       <View style={styles.cardDescription}>
         <Text style={styles.title}>{title}</Text>
@@ -35,6 +31,6 @@ const Card = memo<CardProps>(({ key, title, description, image, first, place, ha
       </View>
     </TouchableOpacity>
   );
-})
+});
 
 export default Card;

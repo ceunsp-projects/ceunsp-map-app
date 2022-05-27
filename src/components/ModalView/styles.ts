@@ -15,25 +15,28 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 4
   },
   scrollView: {
+    backgroundColor: theme.colors.navy_blue
+  },
+  touchableOpacity: {
+    flexWrap: 'wrap',
+    flexDirection: 'row',
     padding: 7,
-    backgroundColor: theme.colors.navy_blue,
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4
   },
   imgItens: {
-    marginBottom: 10,
-    width: '100%',
-    height: 30,
-    shadowColor: '#f00',
-    shadowOffset: {
-      width: 10,
-      height: 10
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 4,
+    backgroundColor: theme.colors.navy_blue
   },
   imgItensTxt: {
-    color: theme.colors.text
+    marginRight: 12,
+    borderRadius: 6,
+    marginBottom: 6,
+    backgroundColor: theme.colors.text,
+    padding: 4,
+    color: theme.colors.navy_blue,
+    fontWeight: 'bold'
   }
 });
