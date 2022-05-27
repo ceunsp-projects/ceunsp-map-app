@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 import { View } from '../components/Themed';
 import { RootTabScreenProps } from '../../types';
@@ -42,7 +42,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   let mapIndex = 0;
   const animation = new Animated.Value(0);
 
-  const { response: places } = useRequest<IPlace[]>(() => placeService.list(), []);
+  const { response: places, error: error } = useRequest<IPlace[]>(() => placeService.list(), []);
 
   useEffect(() => {
     animation.addListener(({ value }) => {
@@ -74,21 +74,17 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     });
   });
 
-  const interpolations = useMemo(
-    () =>
-      places?.map((marker, index) => {
-        const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
+  const interpolations = places?.map((marker, index) => {
+    const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
 
-        const scale = animation.interpolate({
-          inputRange,
-          outputRange: [1, 1.5, 1],
-          extrapolate: 'clamp'
-        });
+    const scale = animation.interpolate({
+      inputRange,
+      outputRange: [1, 1.5, 1],
+      extrapolate: 'clamp'
+    });
 
-        return { scale };
-      }),
-    [places]
-  );
+    return { scale };
+  });
 
   const handleShowModal = useCallback((place: IPlace) => {
     setPlace(place);
@@ -125,8 +121,11 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   return (
     <View style={styles.container}>
       <MapView
+        mapPadding={{ top: 40, right: 0, bottom: 0, left: 0 }}
         showsCompass={true}
+        provider={PROVIDER_GOOGLE}
         showsMyLocationButton={true}
+        showsIndoors={true}
         showsUserLocation={true}
         ref={MapRef}
         style={styles.map}
@@ -136,14 +135,16 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           const scaleStyle = {
             transform: [
               {
-                scale: interpolations?.[index].scale
+                scale: interpolations?.[index].scale ?? 1
               }
             ]
           };
           return (
             <Marker key={index} coordinate={place.location}>
-              <Animated.View style={[styles.ring]}>
-                <View style={[styles.marker]} />
+              <Animated.View style={styles.markerWrap}>
+                <Animated.View style={[styles.ring, scaleStyle]}>
+                  <View style={[styles.marker]} />
+                </Animated.View>
               </Animated.View>
             </Marker>
           );
@@ -191,7 +192,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
                 <Card
                   key={index}
                   title={place.name}
-                  description={'tteste'}
+                  description={'Teste'}
                   place={place}
                   first={index == 0 ? true : false}
                   handleShowModal={handleShowModal}
@@ -216,6 +217,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   map: {
+    flex: 1,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height
   },
@@ -226,6 +228,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(130,4,150, 0.9)'
   },
   markerWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -237,7 +242,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    top: 10,
+    top: 50,
     left: 10,
     backgroundColor: theme.colors.navy_blue
   },

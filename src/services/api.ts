@@ -27,7 +27,7 @@ class ApiService {
     return this.client().post(url, {
       data,
       headers: {
-        'Content-type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
+        'Content-type': data instanceof FormData ? 'multipart/form-data' : 'application/json'
       }
     });
   }
@@ -42,7 +42,7 @@ class ApiService {
 
   private client(): AxiosInstance {
     return axios.create({
-      baseURL: BASE_ENDPOINT,
+      baseURL: BASE_ENDPOINT
     });
   }
 }

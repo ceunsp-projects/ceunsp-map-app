@@ -17,21 +17,11 @@ interface CardProps {
   handleShowModal: (place: IPlace) => void;
 }
 
-export const Images = [
-  { uri: 'https://i.imgur.com/sNam9iJ.jpg' },
-  { uri: 'https://i.imgur.com/N7rlQYt.jpg' },
-  { uri: 'https://i.imgur.com/UDrH0wm.jpg' },
-  { uri: 'https://i.imgur.com/Ka8kNST.jpg' }
-];
-
 const Card = memo<CardProps>(({ title, description, image, first, place, handleShowModal }) => {
   const onShowModal = useCallback(() => handleShowModal(place), []);
 
   return (
-    <TouchableOpacity
-      style={first ? styles.firstContainer : styles.container}
-      onPress={onShowModal}
-    >
+    <TouchableOpacity style={first ? styles.firstContainer : styles.container} onPress={onShowModal}>
       {!!image && <Image source={image} style={styles.img} />}
       <View style={styles.cardDescription}>
         <Text style={styles.title}>{title}</Text>
@@ -39,6 +29,6 @@ const Card = memo<CardProps>(({ title, description, image, first, place, handleS
       </View>
     </TouchableOpacity>
   );
-})
+});
 
 export default Card;
