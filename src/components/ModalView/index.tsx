@@ -5,6 +5,7 @@ import useRequest from '~/hooks/useRequest';
 import { IPlace, IPlaceDetails } from '~/interfaces/map';
 import apiService from '~/services/api';
 import placeService from '~/services/place';
+import PhotoGrid from '../PhotoGrid';
 
 import { styles } from './styles';
 
@@ -30,6 +31,7 @@ const ModalView = memo<ModalViewProps>(({ isVisible, handleHideModal, place }) =
       animationOutTiming={700}
     >
       <View style={styles.cardModal}>
+        <PhotoGrid place={place} />
         {/* {place && <Image style={styles.img} source={{ uri: place.image }} />} */}
 
         <ScrollView style={styles.scrollView} scrollEventThrottle={400}>

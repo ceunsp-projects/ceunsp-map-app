@@ -1,17 +1,18 @@
-import { useCallback, useRef, memo, useEffect, useState } from 'react';
+import { useRef, memo, useEffect, useState } from 'react';
 
-import { Camera as ExpoCamera, CameraCapturedPicture } from 'expo-camera';
+import { Camera as ExpoCamera } from 'expo-camera';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import theme from '~/global/theme';
-import useRequest from '~/hooks/useRequest';
 import useLocation from '~/hooks/useLocation';
 import placeService from '~/services/place';
 import useError from '~/hooks/useError';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { IPlaceCreated } from '~/interfaces/place';
 
 const Camera = memo(() => {
   const CameraRef = useRef<ExpoCamera>(null);
   const isFocused = useIsFocused();
+  const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [type] = useState<'front' | 'back'>(ExpoCamera.Constants.Type.back);
   const { onError } = useError();
@@ -27,19 +28,19 @@ const Camera = memo(() => {
   }, []);
 
   const onPress = async () => {
-    // try {
-    const photo = await CameraRef.current?.takePictureAsync();
+    try {
+      const photo = await CameraRef.current?.takePictureAsync();
 
-    if (!photo?.uri) return;
+      if (!photo?.uri) return;
 
-    const response = await placeService.create(photo, location);
+      const response = await placeService.create(photo, location);
 
-    console.log('AQUIIII', response);
-    // } catch (error: any) {
-    //   const message = error?.response?.data?.message ?? error;
-    //   console.log(JSON.stringify(error.response), message);
-    //   onError(message);
-    // }
+      navigation.navigate('Map', { place: response.data.place });
+    } catch (error: any) {
+      const message = error?.response?.data?.message ?? error;
+      console.log(JSON.stringify(error));
+      onError(message);
+    }
   };
 
   return !hasPermission ? (

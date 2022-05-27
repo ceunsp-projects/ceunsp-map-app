@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, LayoutChangeEvent, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
 import MapView, { Marker } from 'react-native-maps';
 
@@ -13,6 +13,8 @@ import theme from '~/global/theme';
 import ModalView from '~/components/ModalView';
 import { IPlace } from '~/interfaces/map';
 import placeService from '~/services/place';
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export type PositionType = {
   title: string;
@@ -21,9 +23,11 @@ export type PositionType = {
 };
 
 const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
-  const [showCards, setShowCards] = useState(false);
+  const [showCards, setShowCards] = useState(true);
+  const isFocused = useIsFocused();
   const [modalVisible, setModalVisible] = useState(false);
   const [place, setPlace] = useState<IPlace | null>(null);
+  const [dataSourceCords, setDataSourceCords] = useState<{ _id: number; location: number }[]>([]);
   const [initialRegion] = useState({
     latitude: -23.20618,
     longitude: -47.29654,
@@ -31,18 +35,20 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     longitudeDelta: 0.0041
   });
 
+  const route = useRoute();
+  const newPlace = route.params?.place ?? null;
+
+  const ScroolViewRef = useRef<ScrollView>();
   const MapRef = useRef<MapView>(null);
   const location = useLocation();
   const { width } = Dimensions.get('window');
 
-  // const CARD_HEIGHT = 220;
   const CARD_WIDTH = width - 7.5;
-  // const SPACING_FOR_CARD_INSET = width * 0.1 - 25;
 
   let mapIndex = 0;
   const animation = new Animated.Value(0);
 
-  const { response: places } = useRequest<IPlace[]>(() => placeService.list(), []);
+  const { response: places } = useRequest<IPlace[]>(() => placeService.list(), [isFocused]);
 
   useEffect(() => {
     animation.addListener(({ value }) => {
@@ -81,13 +87,13 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
         const scale = animation.interpolate({
           inputRange,
-          outputRange: [1, 1.5, 1],
+          outputRange: [1, 2.5, 1],
           extrapolate: 'clamp'
         });
 
         return { scale };
       }),
-    [places]
+    [places, animation]
   );
 
   const handleShowModal = useCallback((place: IPlace) => {
@@ -100,16 +106,32 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     setPlace(null);
   }, []);
 
-  // const onMarkerPress = (mapEventData) => {
-  //   const markerID = mapEventData._targetInst.return.key;
+  const onShowCards = useCallback(() => {
+    if (!showCards && !!places) {
+      const firstOfPlaces = places?.[0].location;
 
-  //   let x = (markerID * CARD_WIDTH) + (markerID * 20);
-  //   if (Platform.OS === 'ios') {
-  //     x = x - SPACING_FOR_CARD_INSET;
-  //   }
+      MapRef?.current?.animateToRegion(
+        {
+          latitude: firstOfPlaces?.latitude ?? 0,
+          longitude: firstOfPlaces?.longitude ?? 0,
+          latitudeDelta: 0,
+          longitudeDelta: 0.0021
+        },
+        500
+      );
+    }
 
-  //   _scrollView.current?.scrollTo({x: x, y: 0, animated: true});
-  // }
+    setShowCards(!showCards);
+  }, [places, showCards]);
+
+  const onMarkerPress = useCallback(mapEvent => {
+    console.log(mapEvent);
+  }, []);
+
+  const onLayout = useCallback((placeId: number) => (event: LayoutChangeEvent) => {
+    const layout = event.nativeEvent.layout;
+    setDataSourceCords([...dataSourceCords, { _id: placeId, location: layout.x }]);
+  }, [dataSourceCords]);
 
   useEffect(() => {
     if (!showCards && !!location) {
@@ -121,6 +143,22 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
       });
     }
   }, [location]);
+
+  useEffect(() => {
+    if (!!newPlace) {
+      const place = dataSourceCords.find(coord => coord._id === newPlace._id);
+
+      if (!place?.location) return;
+
+      setTimeout(() => {
+        ScroolViewRef.current?.scrollTo({
+          x: place.location,
+          y: 0,
+          animated: true
+        });
+      }, 1500);
+    }
+  }, [newPlace]);
 
   return (
     <View style={styles.container}>
@@ -136,27 +174,29 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           const scaleStyle = {
             transform: [
               {
-                scale: interpolations?.[index].scale
+                scale: interpolations?.[index].scale ?? 1
               }
             ]
           };
           return (
-            <Marker key={index} coordinate={place.location}>
-              <Animated.View style={[styles.ring]}>
-                <View style={[styles.marker]} />
+            <Marker key={index} coordinate={place.location} onPress={onMarkerPress} focusable={true}>
+              <Animated.View style={styles.markerWrap}>
+                <Animated.View style={[styles.ring, scaleStyle]} />
+                <View style={styles.marker} />
               </Animated.View>
             </Marker>
           );
         })}
       </MapView>
 
-      <TouchableOpacity style={styles.btnShowCards} onPress={() => setShowCards(!showCards)}>
-        {/* {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />} */}
-        {showCards ? <Text>Fechar</Text> : <Text>Abrir</Text>}
+      <TouchableOpacity style={styles.btnShowCards} onPress={onShowCards}>
+        {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />}
+        {/* {showCards ? <Text>Fechar</Text> : <Text>Abrir</Text>} */}
       </TouchableOpacity>
 
       {showCards && (
         <Animated.ScrollView
+          ref={ScroolViewRef}
           horizontal
           scrollEventThrottle={1}
           pagingEnabled
@@ -189,6 +229,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
             {places?.map((place, index) => {
               return (
                 <Card
+                  onLayout={onLayout(place._id)}
                   key={index}
                   title={place.name}
                   description={'tteste'}
@@ -257,17 +298,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     transform: [{ translateY: 250 }]
   },
-
   ring: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(130,4,150, 0.3)',
-    position: 'absolute',
-    borderWidth: 2,
-    borderColor: 'rgba(130,4,150, 0.5)',
-    alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: "rgba(130,4,150, 0.3)",
+    position: "absolute",
+    borderWidth: 1,
+    borderColor: "rgba(130,4,150, 0.5)",
   }
 });
 

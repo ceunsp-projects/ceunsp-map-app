@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { memo } from 'react';
 import { Pressable } from 'react-native';
+import Galery from '~/screens/Galery';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/Map';
@@ -30,9 +31,19 @@ const BottomTabNavigator = memo(() => {
       <BottomTab.Screen
         name="Picture"
         component={TabTwoScreen}
+        initialParams={{ newPlace: null }}
         options={{
           title: 'Camera',
           headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Galery"
+        component={Galery}
+        initialParams={{ place: null }}
+        options={{
+          title: 'Galeria',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />

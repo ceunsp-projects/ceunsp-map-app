@@ -1,7 +1,6 @@
-import React, { memo, useEffect } from 'react';
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Camera from '~/components/Camera';
-import { LoginPage } from './LoginPage';
 
 const TabTwoScreen = memo(() => {
   return (

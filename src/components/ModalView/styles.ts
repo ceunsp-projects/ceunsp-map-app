@@ -3,7 +3,7 @@ import theme from '~/global/theme';
 
 export const styles = StyleSheet.create({
   cardModal: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.navy_blue,
     width: '100%',
     height: 500,
     borderRadius: 4

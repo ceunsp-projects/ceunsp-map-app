@@ -1,6 +1,8 @@
 import { CameraCapturedPicture } from 'expo-camera';
 import apiService from './api';
 import { LocationObject } from 'expo-location';
+import { IPlaceCreated } from '~/interfaces/place';
+import { AxiosResponse } from 'axios';
 
 class PlaceService {
   async list() {
@@ -11,7 +13,7 @@ class PlaceService {
     return apiService.get(`/place/${id}`);
   }
 
-  async create(photo: CameraCapturedPicture, location?: LocationObject) {
+  async create(photo: CameraCapturedPicture, location?: LocationObject): Promise<AxiosResponse<IPlaceCreated>> {
     const data = new FormData();
     const filename = photo.uri.split('/').pop();
 
@@ -20,10 +22,8 @@ class PlaceService {
       type: 'image/jpeg',
       name: filename
     } as any);
-    data.append('latitude', location?.coords.latitude as any);
-    data.append('longitude', location?.coords.longitude as any);
-
-    console.log({ location: location?.coords, photo });
+    data.append('latitude', -23.206232 as any);
+    data.append('longitude', -47.297929 as any);
 
     return apiService.post('/place/save', data);
   }
