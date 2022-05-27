@@ -15,14 +15,15 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 4
   },
   scrollView: {
-    backgroundColor: theme.colors.navy_blue
+    backgroundColor: theme.colors.navy_blue,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4
   },
   touchableOpacity: {
     flexWrap: 'wrap',
     flexDirection: 'row',
-    padding: 7,
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4
+    justifyContent: 'center',
+    padding: 7
   },
   imgItens: {
     alignItems: 'center',
