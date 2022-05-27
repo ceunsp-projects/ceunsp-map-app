@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { memo } from 'react';
-import { Pressable } from 'react-native';
+
 import Galery from '~/screens/Galery';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
