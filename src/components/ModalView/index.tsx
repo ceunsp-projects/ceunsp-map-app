@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, Image, ScrollView, Text, SafeAreaView } from 'react-native';
+import { View, Image, ScrollView, Text, SafeAreaView, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import useRequest from '~/hooks/useRequest';
 import { IPlace, IPlaceDetails } from '~/interfaces/map';
@@ -30,14 +30,16 @@ const ModalView = memo<ModalViewProps>(({ isVisible, handleHideModal, place }) =
       animationOutTiming={700}
     >
       <View style={styles.cardModal}>
-        {/* {place && <Image style={styles.img} source={{ uri: place.image }} />} */}
+        {place && <Image style={styles.img} source={{ uri: place.pictures[0] }} />}
 
         <ScrollView style={styles.scrollView} scrollEventThrottle={400}>
-          {placeDetails?.items.map(item => (
-            <View key={item} style={styles.imgItens}>
+          <TouchableOpacity style={styles.touchableOpacity}>
+            {placeDetails?.items.map(item => (
+              // <View key={item} style={styles.imgItens}>
               <Text style={styles.imgItensTxt}>{item}</Text>
-            </View>
-          ))}
+              // </View>
+            ))}
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </Modal>
