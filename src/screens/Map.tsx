@@ -175,9 +175,8 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           return (
             <Marker key={index} coordinate={place.location}>
               <Animated.View style={styles.markerWrap}>
-                <Animated.View style={[styles.ring, scaleStyle]}>
-                  <View style={[styles.marker]} />
-                </Animated.View>
+                <Animated.View style={[styles.ring, scaleStyle]} />
+                <View style={[styles.marker]} />
               </Animated.View>
             </Marker>
           );

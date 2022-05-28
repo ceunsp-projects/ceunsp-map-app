@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { memo, useCallback } from 'react';
-import { Image, Text, View, TouchableOpacity } from 'react-native';
+import { Image, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { IPlace } from '~/interfaces/map';
 
 interface IPhotoGrid {
@@ -15,16 +15,26 @@ const PhotoGrid = memo<IPhotoGrid>(({ place }) => {
   }, [place]);
 
   return (
-    <View style={{ flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 }}>
-      {place.pictures.map((picture, index) => index < 4 && (
-        <Image key={index} style={{ width: '45%', height: 100, margin: 4, borderRadius: 10, borderWidth: 1, borderColor: '#fff' }} source={{ uri: picture }} resizeMode='cover' />
-      ))}
+    <View style={styles.container}>
+      <View style={styles.content}>
+        {place.pictures.map((picture, index) => index < 4 && (
+          <Image key={index} style={styles.image} source={{ uri: picture }} resizeMode='cover' />
+        ))}
+      </View>
 
-      <TouchableOpacity onPress={onViewAll} style={{ padding: 10 }}>
-        <Text style={{ color: '#fff' }}>Ver todas</Text>
+      <TouchableOpacity onPress={onViewAll} style={styles.button}>
+        <Text style={styles.buttonText}>Ver todas</Text>
       </TouchableOpacity>
     </View>
   );
-})
+});
+
+const styles = StyleSheet.create({
+  container: { alignItems: 'center', justifyContent: 'center' },
+  content: { flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'center', paddingVertical: 10 },
+  image: { width: '45%', height: 100, margin: 4, borderRadius: 10, borderWidth: 1, borderColor: '#fff' },
+  button: { padding: 10, marginBottom: 10, borderWidth: 1, borderColor: '#fff', borderRadius: 10 },
+  buttonText: { color: '#fff' }
+});
 
 export default PhotoGrid;
