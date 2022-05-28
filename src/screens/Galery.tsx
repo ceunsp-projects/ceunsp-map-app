@@ -34,13 +34,15 @@ const Galery = memo(() => {
   const keyExtractor = useCallback((item) => item, []);
   const renderSectionHeader = useCallback(({ section }) => <Text style={styles.title}>{section.title}</Text>, []);
   const renderSectionFooter = useCallback(
-    ({ section: { data } }) => <GridImageView data={data} style={{ backgroundColor: 'red' }} />, []);
+    ({ section: { data } }) => <GridImageView data={data} />, []);
 
-  const renderFooter = useCallback(() => placesFiltered?.length >= 0 ? null : (
-    <View style={styles.notFound}>
-      <Text style={styles.textNotFound}>Sem registros para sua busca...</Text>
-    </View>
-  ), [placesFiltered]);
+  const renderFooter = useCallback(() => {
+    return placesFiltered?.length === 0 ? (
+      <View style={styles.notFound}>
+        <Text style={styles.textNotFound}>Sem registros para sua busca...</Text>
+      </View>
+    ) : null;
+  }, [placesFiltered]);
 
   useEffect(() => {
     if (!!placeToViewAll) {
