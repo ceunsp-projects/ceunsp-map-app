@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Animated, Dimensions, LayoutChangeEvent, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
@@ -120,14 +120,10 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     setShowCards(!showCards);
   }, [places, showCards]);
 
-  const onMarkerPress = useCallback(mapEvent => {
-    console.log(mapEvent);
-  }, []);
-
   const onLayout = useCallback((placeId: number) => (event: LayoutChangeEvent) => {
     const layout = event.nativeEvent.layout;
     setDataSourceCords([...dataSourceCords, { _id: placeId, location: layout.x }]);
-  }, [dataSourceCords]);
+  }, [dataSourceCords, newPlace]);
 
   useEffect(() => {
     if (!showCards && !!location) {
@@ -143,7 +139,6 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   useEffect(() => {
     if (!!newPlace) {
       const place = dataSourceCords.find(coord => coord._id === newPlace._id);
-
       if (!place?.location) return;
 
       setTimeout(() => {
@@ -152,7 +147,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           y: 0,
           animated: true
         });
-      }, 1500);
+      }, 2000);
     }
   }, [newPlace]);
 
@@ -289,7 +284,7 @@ const styles = StyleSheet.create({
 
   scrollView: {
     width: '100%',
-    height: 225,
+    height: 150,
     position: 'absolute',
     bottom: 0,
     left: 0

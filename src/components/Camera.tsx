@@ -8,7 +8,6 @@ import useLocation from '~/hooks/useLocation';
 import placeService from '~/services/place';
 import useError from '~/hooks/useError';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { IPlaceCreated } from '~/interfaces/place';
 
 const Camera = memo(() => {
   const CameraRef = useRef<ExpoCamera>(null);
@@ -38,7 +37,7 @@ const Camera = memo(() => {
 
       navigation.navigate('Map', { place: response.data.place });
     } catch (error: any) {
-      const message = error?.response?.data?.message ?? error;
+      const message = error?.response?.data?.message ?? error?.message;
       console.log(JSON.stringify(error));
       onError(message);
     }

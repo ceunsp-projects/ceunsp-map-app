@@ -1,8 +1,7 @@
-import { AxiosError, AxiosResponse } from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import useError from './useError';
 
-export default function useRequest<T = any>(callback: () => Promise<AxiosResponse<T>>, deps: React.DependencyList) {
+export default function usePromise<T = any>(callback: () => Promise<T>, deps: React.DependencyList) {
   const [response, setResponse] = useState<T>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { error, onError } = useError();
@@ -14,7 +13,7 @@ export default function useRequest<T = any>(callback: () => Promise<AxiosRespons
     callback()
       .then(result => {
         if (!isSubscribed) return;
-        setResponse(result?.data);
+        setResponse(result);
       })
       .catch(err => {
         if (!isSubscribed) return;

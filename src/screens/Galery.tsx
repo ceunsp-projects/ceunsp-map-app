@@ -1,5 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { SectionList } from 'react-native';
 import { ScrollView, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
 import GridImageView from 'react-native-grid-image-viewer';
 import { Text, View } from '~/components/Themed';
@@ -9,12 +10,12 @@ import { IPlace } from '~/interfaces/map';
 import placeService from '~/services/place';
 
 const Galery = memo(() => {
+  const [currentPlace, setCurrentPlace] = useState<IPlace | null>();
   const isFocused = useIsFocused();
   const { response: places, isLoading } = useRequest<IPlace[]>(() => placeService.list(), [isFocused]);
 
   const [allPlaces, setAllPlaces] = useState<IPlace[] | undefined>(places);
   const [searchValue, setSearchValue] = useState('');
-  const [currentPlace, setCurrentPlace] = useState<IPlace>();
   const route = useRoute();
   const placeToViewAll = route.params?.place;
 
@@ -27,9 +28,36 @@ const Galery = memo(() => {
     }
   }, [searchValue]);
 
-  useEffect(() => {
-    searchPlace();
-  }, [searchValue]);
+  const keyExtractor = useCallback(item => item, []);
+  const renderSectionHeader = useCallback(({ section }) => <Text>{section.title}</Text>, []);
+  const renderSectionFooter = useCallback(
+    ({ section: { data } }) => <GridImageView data={data} style={{ backgroundColor: 'red' }} />,
+    []
+  );
+  const renderHeader = useCallback(
+    () => (
+      <View style={styles.searchContent}>
+        <TextInput style={styles.inputSearch} placeholder='Pesquisar...' onChangeText={setSearchValue} />
+      </View>
+    ),
+    []
+  );
+
+  const renderFooter = useCallback(
+    () =>
+      allPlaces && allPlaces?.length >= 0 ? null : (
+        <View style={styles.notFound}>
+          <Text style={styles.textNotFound}>Sem registros para sua busca...</Text>
+        </View>
+      ),
+    [allPlaces]
+  );
+
+  const placesFormated = useMemo(() => {
+    if (!!currentPlace?.pictures) return [{ title: currentPlace.name, data: currentPlace.pictures }];
+
+    return allPlaces?.map(place => ({ title: place.name, data: place.pictures })) ?? [];
+  }, [allPlaces]);
 
   useEffect(() => {
     if (!!placeToViewAll) {
@@ -37,11 +65,6 @@ const Galery = memo(() => {
     }
   }, [placeToViewAll]);
 
-  useEffect(() => {
-    setAllPlaces(places);
-  }, [places]);
-
-  console.log(allPlaces);
   if (isLoading) {
     return (
       <View style={styles.loadingView}>
@@ -50,38 +73,43 @@ const Galery = memo(() => {
     );
   }
 
-  if (!!currentPlace?.pictures)
+  if (!isFocused) setCurrentPlace(null);
+
+  if (!!currentPlace?.pictures) {
     return (
       <ScrollView style={{ backgroundColor: theme.colors.navy_blue }}>
         <Text>{currentPlace.name}</Text>
         <GridImageView data={currentPlace.pictures} />
       </ScrollView>
     );
+  }
+
+  useEffect(() => {
+    searchPlace();
+  }, [searchValue]);
+
+  useEffect(() => setAllPlaces(places), [places]);
 
   return (
-    <ScrollView style={{ backgroundColor: theme.colors.navy_blue }}>
-      <View style={styles.searchContent}>
-        <TextInput style={styles.inputSearch} placeholder='Pesquisar...' onChangeText={setSearchValue} />
-      </View>
-      {allPlaces && allPlaces?.length > 0 ? (
-        allPlaces?.map(place => (
-          <View key={place._id} style={{ backgroundColor: theme.colors.navy_blue }}>
-            <Text>{place.name}</Text>
-            <GridImageView data={place.pictures} />
-          </View>
-        ))
-      ) : (
-        <View style={styles.notFound}>
-          <Text style={styles.textNotFound}>Sem registros para sua busca...</Text>
-        </View>
-      )}
-    </ScrollView>
+    <SectionList
+      style={styles.list}
+      sections={placesFormated}
+      renderItem={() => null}
+      keyExtractor={keyExtractor}
+      renderSectionHeader={renderSectionHeader}
+      renderSectionFooter={renderSectionFooter}
+      ListFooterComponent={renderFooter}
+      ListHeaderComponent={renderHeader}
+    />
   );
 });
 
 export default Galery;
 
 export const styles = StyleSheet.create({
+  list: {
+    backgroundColor: theme.colors.navy_blue
+  },
   searchContent: {
     width: '100%',
     backgroundColor: theme.colors.navy_blue,
