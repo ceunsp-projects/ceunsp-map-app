@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { ScrollView, TextInput, StyleSheet } from 'react-native';
+import { ScrollView, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
 import GridImageView from 'react-native-grid-image-viewer';
 import { Text, View } from '~/components/Themed';
 import theme from '~/global/theme';
@@ -10,7 +10,7 @@ import placeService from '~/services/place';
 
 const Galery = memo(() => {
   const isFocused = useIsFocused();
-  const { response: places } = useRequest<IPlace[]>(() => placeService.list(), [isFocused]);
+  const { response: places, isLoading } = useRequest<IPlace[]>(() => placeService.list(), [isFocused]);
 
   const [allPlaces, setAllPlaces] = useState<IPlace[] | undefined>(places);
   const [searchValue, setSearchValue] = useState('');
@@ -36,6 +36,19 @@ const Galery = memo(() => {
       setCurrentPlace(placeToViewAll);
     }
   }, [placeToViewAll]);
+
+  useEffect(() => {
+    setAllPlaces(places);
+  }, [places]);
+
+  console.log(allPlaces);
+  if (isLoading) {
+    return (
+      <View style={styles.loadingView}>
+        <ActivityIndicator color='#fff' size={50} />
+      </View>
+    );
+  }
 
   if (!!currentPlace?.pictures)
     return (
@@ -91,5 +104,12 @@ export const styles = StyleSheet.create({
   textNotFound: {
     color: theme.colors.text,
     fontSize: 18
+  },
+  loadingView: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.navy_blue
   }
 });

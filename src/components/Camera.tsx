@@ -2,6 +2,7 @@ import { useRef, memo, useEffect, useState } from 'react';
 
 import { Camera as ExpoCamera } from 'expo-camera';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Camera as Cam } from 'phosphor-react-native';
 import theme from '~/global/theme';
 import useLocation from '~/hooks/useLocation';
 import placeService from '~/services/place';
@@ -56,27 +57,29 @@ const Camera = memo(() => {
       autoFocus={ExpoCamera.Constants.AutoFocus.on}
     >
       <TouchableOpacity onPress={onPress} style={styles.button}>
-        <Text style={{ color: 'white' }}>Tire uma foto do seu bloco</Text>
+        <Cam size={32} color='#fff' />
       </TouchableOpacity>
     </ExpoCamera>
-  ) : <View />;
+  ) : (
+    <View />
+  );
 });
 
 const styles = StyleSheet.create({
   camera: {
     flex: 1,
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   },
   button: {
-    flex: 0.1,
-    width: '100%',
-    height: 50,
-    position: 'absolute',
+    width: 60,
+    height: 60,
+    borderRadius: 35,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.red,
-    bottom: 0,
-    left: 0
+    borderWidth: 2,
+    borderColor: theme.colors.navy_blue,
+    marginBottom: 10
   },
   buttonText: {
     color: theme.colors.text,
