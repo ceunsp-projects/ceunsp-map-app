@@ -1,106 +1,91 @@
+import { FontAwesome } from '@expo/vector-icons';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { SectionList } from 'react-native';
-import { ScrollView, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
+import { SectionList, Text } from 'react-native';
+import { TextInput, StyleSheet, ActivityIndicator, ImageBackground } from 'react-native';
 import GridImageView from 'react-native-grid-image-viewer';
-import { Text, View } from '~/components/Themed';
+import { View } from '~/components/Themed';
 import theme from '~/global/theme';
 import useRequest from '~/hooks/useRequest';
 import { IPlace } from '~/interfaces/map';
 import placeService from '~/services/place';
 
+import ceunspImg from '~/assets/ceunsp.jpg';
+
 const Galery = memo(() => {
-  const [currentPlace, setCurrentPlace] = useState<IPlace | null>();
   const isFocused = useIsFocused();
   const { response: places, isLoading } = useRequest<IPlace[]>(() => placeService.list(), [isFocused]);
 
-  const [allPlaces, setAllPlaces] = useState<IPlace[] | undefined>(places);
   const [searchValue, setSearchValue] = useState('');
+
   const route = useRoute();
   const placeToViewAll = route.params?.place;
 
-  const searchPlace = useCallback(() => {
-    if (searchValue != '') {
-      const filter = allPlaces?.filter(value => value.name.toLowerCase().includes(searchValue.toLowerCase()));
-      setAllPlaces(filter);
-    } else {
-      setAllPlaces(places);
-    }
-  }, [searchValue]);
+  const placesFiltered = useMemo(() => {
+    if (!!searchValue)
+      return (
+        places
+          ?.filter(value => value.name.toLowerCase().includes(searchValue.toLowerCase()))
+          ?.map(place => ({ title: place.name, data: place.pictures })) ?? []
+      );
+
+    return places?.map(place => ({ title: place.name, data: place.pictures })) ?? [];
+  }, [places, searchValue]);
+
+  const onChangeText = useCallback(value => setSearchValue(value), []);
+  const onClearText = useCallback(() => setSearchValue(''), []);
 
   const keyExtractor = useCallback(item => item, []);
-  const renderSectionHeader = useCallback(({ section }) => <Text>{section.title}</Text>, []);
-  const renderSectionFooter = useCallback(
-    ({ section: { data } }) => <GridImageView data={data} style={{ backgroundColor: 'red' }} />,
-    []
-  );
-  const renderHeader = useCallback(
-    () => (
-      <View style={styles.searchContent}>
-        <TextInput style={styles.inputSearch} placeholder='Pesquisar...' onChangeText={setSearchValue} />
-      </View>
-    ),
-    []
-  );
+  const renderSectionHeader = useCallback(({ section }) => <Text style={styles.title}>{section.title}</Text>, []);
+  const renderSectionFooter = useCallback(({ section: { data } }) => <GridImageView data={data} />, []);
 
   const renderFooter = useCallback(
     () =>
-      allPlaces && allPlaces?.length >= 0 ? null : (
+      placesFiltered?.length > 0 ? null : (
         <View style={styles.notFound}>
           <Text style={styles.textNotFound}>Sem registros para sua busca...</Text>
         </View>
       ),
-    [allPlaces]
+    [placesFiltered]
   );
-
-  const placesFormated = useMemo(() => {
-    if (!!currentPlace?.pictures) return [{ title: currentPlace.name, data: currentPlace.pictures }];
-
-    return allPlaces?.map(place => ({ title: place.name, data: place.pictures })) ?? [];
-  }, [allPlaces]);
 
   useEffect(() => {
     if (!!placeToViewAll) {
-      setCurrentPlace(placeToViewAll);
+      setSearchValue(placeToViewAll.name);
     }
   }, [placeToViewAll]);
 
   if (isLoading) {
     return (
-      <View style={styles.loadingView}>
+      <ImageBackground style={styles.loadingView} source={ceunspImg}>
         <ActivityIndicator color='#fff' size={50} />
-      </View>
+      </ImageBackground>
     );
   }
-
-  if (!isFocused) setCurrentPlace(null);
-
-  if (!!currentPlace?.pictures) {
-    return (
-      <ScrollView style={{ backgroundColor: theme.colors.navy_blue }}>
-        <Text>{currentPlace.name}</Text>
-        <GridImageView data={currentPlace.pictures} />
-      </ScrollView>
-    );
-  }
-
-  useEffect(() => {
-    searchPlace();
-  }, [searchValue]);
-
-  useEffect(() => setAllPlaces(places), [places]);
 
   return (
-    <SectionList
-      style={styles.list}
-      sections={placesFormated}
-      renderItem={() => null}
-      keyExtractor={keyExtractor}
-      renderSectionHeader={renderSectionHeader}
-      renderSectionFooter={renderSectionFooter}
-      ListFooterComponent={renderFooter}
-      ListHeaderComponent={renderHeader}
-    />
+    <ImageBackground source={ceunspImg}>
+      <SectionList
+        style={styles.list}
+        sections={placesFiltered}
+        renderItem={() => null}
+        keyExtractor={keyExtractor}
+        renderSectionHeader={renderSectionHeader}
+        renderSectionFooter={renderSectionFooter}
+        ListFooterComponent={renderFooter}
+        ListHeaderComponent={
+          <View style={styles.searchContent}>
+            <TextInput
+              style={styles.inputSearch}
+              placeholder='Pesquisar...'
+              value={searchValue}
+              onChangeText={onChangeText}
+            />
+            <FontAwesome size={30} name='close' onPress={onClearText} color='#fff' />
+          </View>
+        }
+      />
+    </ImageBackground>
   );
 });
 
@@ -108,12 +93,15 @@ export default Galery;
 
 export const styles = StyleSheet.create({
   list: {
-    backgroundColor: theme.colors.navy_blue
+    paddingHorizontal: 10,
+    height: '100%'
   },
   searchContent: {
     width: '100%',
-    backgroundColor: theme.colors.navy_blue,
+    backgroundColor: 'transparent',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
     paddingVertical: 10
   },
   inputSearch: {
@@ -139,5 +127,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.navy_blue
+  },
+  title: {
+    paddingLeft: 4,
+    paddingVertical: 10,
+    color: theme.colors.text,
+    fontSize: 18,
+    fontWeight: 'bold'
   }
 });

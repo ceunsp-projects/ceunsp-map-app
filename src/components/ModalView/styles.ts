@@ -22,6 +22,7 @@ export const styles = StyleSheet.create({
   touchableOpacity: {
     flexWrap: 'wrap',
     flexDirection: 'row',
+    justifyContent: 'center',
     padding: 7
   },
   imgItens: {

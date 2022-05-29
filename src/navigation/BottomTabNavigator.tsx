@@ -26,7 +26,7 @@ const BottomTabNavigator = memo(() => {
         options={() => ({
           title: 'Mapa',
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name='map-o' color={color} />
+          tabBarIcon: ({ color }) => <TabBarIcon name='map-pin' color={color} />
         })}
       />
       <BottomTab.Screen
@@ -36,7 +36,7 @@ const BottomTabNavigator = memo(() => {
         options={{
           title: 'Camera',
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />
+          tabBarIcon: ({ color }) => <TabBarIcon name='camera-retro' color={color} />
         }}
       />
       <BottomTab.Screen
@@ -45,7 +45,7 @@ const BottomTabNavigator = memo(() => {
         initialParams={{ place: null }}
         options={{
           title: 'Galeria',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="photo" color={color} />,
         }}
       />
     </BottomTab.Navigator>

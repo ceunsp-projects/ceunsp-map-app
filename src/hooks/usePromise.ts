@@ -3,7 +3,7 @@ import useError from './useError';
 
 export default function usePromise<T = any>(callback: () => Promise<T>, deps: React.DependencyList) {
   const [response, setResponse] = useState<T>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { error, onError } = useError();
 
   useEffect(() => {

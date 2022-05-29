@@ -6,54 +6,37 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.colors.navy_blue,
     width: Dimensions.get('window').width - 15,
+    height: '100%',
     borderRadius: 5,
     marginRight: 7.5,
+    position: 'relative'
   },
   firstContainer: {
     alignItems: 'center',
     backgroundColor: theme.colors.navy_blue,
     width: Dimensions.get('window').width - 15,
+    height: '100%',
     borderRadius: 5,
-    marginHorizontal: 7.5
+    marginHorizontal: 7.5,
+    position: 'relative'
   },
   img: {
     width: '100%',
-    height: '100%',
-    borderRadius: 50
+    height: '100%'
   },
-  cardDescription: {
-    flex: 1,
+  titleView: {
+    width: '100%',
+    height: 30,
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 7,
-    shadowColor: "#FFF",
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.58,
-    shadowRadius: 16.00,
-
-    elevation: 24,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5
   },
   title: {
-    marginBottom: 10,
-    fontSize: 18,
-    alignSelf: 'center',
-    color: theme.colors.text,
-    fontWeight: 'bold',
-    backgroundColor: theme.colors.navy_blue_light,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20
-  },
-  description: {
-    fontSize: 14,
-    color: theme.colors.text,
-    alignSelf: 'center'
-  },
-  icon: {
-    color: 'black'
-  },
-  footer: {}
+    color: theme.colors.text
+  }
 });
