@@ -22,8 +22,10 @@ class PlaceService {
       type: 'image/jpeg',
       name: filename
     } as any);
-    data.append('latitude', -23.206232 as any);
-    data.append('longitude', -47.297929 as any);
+    // data.append('latitude', -23.206232 as any);
+    // data.append('longitude', -47.297929 as any);
+    data.append('latitude', location?.coords.latitude as any);
+    data.append('longitude', location?.coords.longitude as any);
 
     return apiService.post('/place/save', data);
   }

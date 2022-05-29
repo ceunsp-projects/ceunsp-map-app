@@ -1,14 +1,12 @@
 import { useRef, memo, useEffect, useState } from 'react';
 
-import { Camera as ExpoCamera } from 'expo-camera';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Camera as Cam } from 'phosphor-react-native';
+import { AutoFocus, Camera as ExpoCamera, CameraType } from 'expo-camera';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import theme from '~/global/theme';
 import useLocation from '~/hooks/useLocation';
 import placeService from '~/services/place';
 import useError from '~/hooks/useError';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import TabBarIcon from '~/navigation/TabBarIcon';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCallback } from 'react';
 
@@ -17,7 +15,8 @@ const Camera = memo(() => {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const [type] = useState<'front' | 'back'>(ExpoCamera.Constants.Type.back);
+  const [isLoading, setIsLoading] = useState(false);
+  const [type] = useState<CameraType>(CameraType.back);
   const { onError } = useError();
 
   const location = useLocation();
@@ -34,17 +33,19 @@ const Camera = memo(() => {
     try {
       const photo = await CameraRef.current?.takePictureAsync();
       CameraRef.current?.pausePreview();
+      setIsLoading(true);
 
       if (!photo?.uri) return;
 
       const response = await placeService.create(photo, location);
 
       CameraRef.current?.resumePreview();
+      setIsLoading(false);
       navigation.navigate('Map', { place: response.data.place });
     } catch (error: any) {
       CameraRef.current?.resumePreview();
+      setIsLoading(false);
       const message = error?.response?.data?.message ?? error?.message;
-      console.log(JSON.stringify(error));
       onError(message);
     }
   }, [navigation]);
@@ -54,17 +55,20 @@ const Camera = memo(() => {
       <Text style={styles.textNotHasPermission}>Precisamos de sua permissão para acessar a camera :(</Text>
     </View>
   ) : isFocused ? (
-    <ExpoCamera
-      ref={CameraRef}
-      ratio='16:9'
-      style={styles.camera}
-      type={type}
-      autoFocus={ExpoCamera.Constants.AutoFocus.on}
-    >
-      <TouchableOpacity onPress={onPress} style={styles.button}>
-        <Text style={{ color: 'white' }}>Tire uma foto do seu bloco</Text>
-        <FontAwesome size={20} style={styles.buttonIcon} name='send-o' />
-      </TouchableOpacity>
+    <ExpoCamera ref={CameraRef} ratio='16:9' style={styles.camera} type={type} autoFocus={AutoFocus.on}>
+      <View style={styles.containerPhoto}>
+        {!!isLoading && (
+          <View style={styles.containerLoading}>
+            <ActivityIndicator style={styles.loading} size={30} color='#fff' />
+          </View>
+        )}
+
+        <TouchableOpacity style={styles.button} onPress={onPress} disabled={!!isLoading}>
+          <Text style={{ color: 'white' }}>Tire uma foto do seu bloco</Text>
+          <FontAwesome size={20} style={styles.buttonIcon} name='send-o' />
+        </TouchableOpacity>
+      </View>
+      {/* )} */}
     </ExpoCamera>
   ) : (
     <View />
@@ -73,9 +77,22 @@ const Camera = memo(() => {
 
 const styles = StyleSheet.create({
   camera: {
+    flex: 1
+  },
+  containerLoading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)'
+  },
+  containerPhoto: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center'
+  },
+  loading: {
+    position: 'absolute',
+    alignSelf: 'center'
   },
   button: {
     flex: 0.1,
