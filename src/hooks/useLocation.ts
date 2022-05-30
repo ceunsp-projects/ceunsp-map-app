@@ -1,21 +1,15 @@
-import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
+import usePromise from './usePromise';
+import useError from './useError';
 
 export default function useLocation() {
-  const [location, setLocation] = useState<Location.LocationObject>();
+  const { onError } = useError();
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission to access location was denied');
-        return;
-      }
+  const { response: permissions } = usePromise(() => Location.requestForegroundPermissionsAsync(), []);
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
-  }, []);
+  if ((!permissions?.granted || permissions.status !== 'granted') && permissions !== undefined) onError('Estamos sem permissão para acessar sua localização');
+
+  const { response: location } = usePromise(() => Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest }), []);
 
   return location;
 }

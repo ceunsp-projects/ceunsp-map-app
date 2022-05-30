@@ -36,6 +36,7 @@ const Camera = memo(() => {
       setIsLoading(true);
 
       if (!photo?.uri) return;
+      if (!location) return onError('Não foi possível encontrar a sua localização.');
 
       const response = await placeService.create(photo, location);
 
@@ -48,7 +49,7 @@ const Camera = memo(() => {
       const message = error?.response?.data?.message ?? error?.message;
       onError(message);
     }
-  }, [navigation]);
+  }, [navigation, location]);
 
   return !hasPermission ? (
     <View style={styles.containerNotHasPermission}>
@@ -68,7 +69,6 @@ const Camera = memo(() => {
           <FontAwesome size={20} style={styles.buttonIcon} name='send-o' />
         </TouchableOpacity>
       </View>
-      {/* )} */}
     </ExpoCamera>
   ) : (
     <View />

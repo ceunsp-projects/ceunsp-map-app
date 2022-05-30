@@ -3,7 +3,7 @@ import { createContext } from 'react';
 
 interface IError {
   error: AxiosError | null;
-  onError: (error: AxiosError) => void;
+  onError: (error: AxiosError | string) => void;
 }
 
 const ErrorContext = createContext<IError>({
