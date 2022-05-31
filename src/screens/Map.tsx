@@ -13,7 +13,7 @@ import theme from '~/global/theme';
 import ModalView from '~/components/ModalView';
 import { IPlace } from '~/interfaces/map';
 import placeService from '~/services/place';
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 export type PositionType = {
@@ -34,6 +34,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     longitudeDelta: 0.0041
   });
 
+  const isFocused = useIsFocused();
   const route = useRoute();
   const newPlace = route.params?.place ?? null;
 
@@ -47,7 +48,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   let mapIndex = 0;
   const animation = new Animated.Value(0);
 
-  const { response: places } = useRequest<IPlace[]>(() => placeService.list(), []);
+  const { response: places, isLoading } = useRequest<IPlace[]>(() => placeService.list(), [isFocused]);
 
   useEffect(() => {
     animation.addListener(({ value }) => {
@@ -139,7 +140,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   }, [location]);
 
   useEffect(() => {
-    if (!!newPlace) {
+    if (!!newPlace && !isLoading) {
       const place = dataSourceCords.find(coord => coord._id === newPlace._id);
       if (!place?.location) return;
 
@@ -151,7 +152,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
         });
       }, 2000);
     }
-  }, [newPlace]);
+  }, [newPlace, isLoading]);
 
   return (
     <View style={styles.container}>
