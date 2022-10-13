@@ -5,12 +5,11 @@ import { SectionList, Text } from 'react-native';
 import { TextInput, StyleSheet, ActivityIndicator, ImageBackground } from 'react-native';
 import GridImageView from 'react-native-grid-image-viewer';
 import { View } from '~/components/Themed';
+import Colors from '~/constants/Colors';
 import theme from '~/global/theme';
 import useRequest from '~/hooks/useRequest';
 import { IPlace } from '~/interfaces/map';
 import placeService from '~/services/place';
-
-import ceunspImg from '~/assets/ceunsp.jpg';
 
 const Galery = memo(() => {
   const isFocused = useIsFocused();
@@ -53,37 +52,29 @@ const Galery = memo(() => {
     }
   }, [placeToViewAll]);
 
-  if (isLoading) {
-    return (
-      <ImageBackground style={styles.loadingView} source={ceunspImg}>
-        <ActivityIndicator color='#fff' size={50} />
-      </ImageBackground>
-    );
-  }
+  if (isLoading) return <ActivityIndicator color='#fff' size={50} />
 
   return (
-    <ImageBackground source={ceunspImg}>
-      <SectionList
-        style={styles.list}
-        sections={placesFiltered}
-        renderItem={() => null}
-        keyExtractor={keyExtractor}
-        renderSectionHeader={renderSectionHeader}
-        renderSectionFooter={renderSectionFooter}
-        ListFooterComponent={renderFooter}
-        ListHeaderComponent={
-          <View style={styles.searchContent}>
-            <TextInput
-              style={styles.inputSearch}
-              placeholder='Pesquisar...'
-              value={searchValue}
-              onChangeText={onChangeText}
-            />
-            <FontAwesome size={30} name='close' onPress={onClearText} color='#fff' />
-          </View>
-        }
-      />
-    </ImageBackground>
+    <SectionList
+      style={styles.list}
+      sections={placesFiltered}
+      renderItem={() => null}
+      keyExtractor={keyExtractor}
+      renderSectionHeader={renderSectionHeader}
+      renderSectionFooter={renderSectionFooter}
+      ListFooterComponent={renderFooter}
+      ListHeaderComponent={
+        <View style={styles.searchContent}>
+          <TextInput
+            style={styles.inputSearch}
+            placeholder='Pesquisar...'
+            value={searchValue}
+            onChangeText={onChangeText}
+          />
+          <FontAwesome size={30} name='close' onPress={onClearText} color='#fff' />
+        </View>
+      }
+    />
   );
 });
 
@@ -91,6 +82,7 @@ export default Galery;
 
 export const styles = StyleSheet.create({
   list: {
+    backgroundColor: theme.colors.navy_blue,
     paddingHorizontal: 10,
     height: '100%'
   },

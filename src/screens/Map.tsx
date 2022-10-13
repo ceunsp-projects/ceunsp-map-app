@@ -214,15 +214,6 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
           )}
           style={styles.scrollView}
         >
-          {/* <View
-            style={{
-              flexDirection: 'row',
-              width: '100%',
-              position: 'relative',
-              backgroundColor: 'transparent',
-              marginBottom: 5
-            }}
-          > */}
           {places?.map((place, index) => {
             return (
               <Card
@@ -236,7 +227,6 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
               />
             );
           })}
-          {/* </View> */}
         </Animated.ScrollView>
       )}
       <ModalView place={place} isVisible={modalVisible} handleHideModal={handleHideModal} />

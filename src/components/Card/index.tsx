@@ -32,7 +32,7 @@ const Card = memo<CardProps>(({ title, description, image, first, place, handleS
       <ImageBackground
         style={styles.img}
         imageStyle={{ borderRadius: 5 }}
-        source={{ uri: place.pictures[place.pictures.length - 1] }}
+        source={{ uri: place?.pictures?.[0] }}
         resizeMode='cover'
       >
         <View style={styles.titleView}>
