@@ -10,7 +10,7 @@ class PlaceService {
   }
 
   async details(id?: number) {
-    return apiService.get(`/place/${id}`);
+    return apiService.get(`/places/${id}`);
   }
 
   async create(photo: CameraCapturedPicture, location?: LocationObject): Promise<AxiosResponse<IPlaceCreated>> {
@@ -27,7 +27,7 @@ class PlaceService {
     data.append('latitude', location?.coords.latitude as any);
     data.append('longitude', location?.coords.longitude as any);
 
-    return apiService.post('/place/save', data);
+    return apiService.post('/places/save', data);
   }
 }
 
