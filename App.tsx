@@ -6,6 +6,7 @@ import useCachedResources from './src/hooks/useCachedResources';
 import useColorScheme from './src/hooks/useColorScheme';
 import Navigation from './src/navigation';
 import useError from '~/hooks/useError';
+import { Platform } from 'react-native';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -22,7 +23,7 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} />
-        <StatusBar />
+        <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} animated translucent />
       </SafeAreaProvider>
     );
   }

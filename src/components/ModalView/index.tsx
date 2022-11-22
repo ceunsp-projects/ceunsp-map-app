@@ -1,5 +1,6 @@
+import { StatusBar } from 'expo-status-bar';
 import React, { Fragment, memo } from 'react';
-import { View, Image, ScrollView, Text, SafeAreaView, TouchableOpacity, TouchableNativeFeedbackBase, TouchableWithoutFeedback } from 'react-native';
+import { View, Image, ScrollView, Text, SafeAreaView, TouchableOpacity, TouchableNativeFeedbackBase, TouchableWithoutFeedback, Platform } from 'react-native';
 import Modal from 'react-native-modal';
 import useRequest from '~/hooks/useRequest';
 import { IPlace, IPlaceDetails } from '~/interfaces/map';
@@ -30,16 +31,15 @@ const ModalView = memo<ModalViewProps>(({ isVisible, handleHideModal, place }) =
       animationInTiming={700}
       animationOutTiming={700}
     >
+      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} animated backgroundColor='rgba(0,0,0,0.7)' />
       <View style={styles.cardModal}>
-        <PhotoGrid place={place} />
+        <PhotoGrid place={place} handleHideModal={handleHideModal} />
 
-        <ScrollView style={styles.scrollView} scrollEventThrottle={400}>
-          <TouchableOpacity activeOpacity={1} onPress={() => null} style={styles.touchableOpacity}>
-            {placeDetails?.items.map(item => (
-              <Text key={item} style={styles.imgItensTxt}>{item}</Text>
-            ))}
-          </TouchableOpacity>
-        </ScrollView>
+        {!!placeDetails?.description ? (
+          <ScrollView style={styles.scrollView}>
+            <Text style={styles.imgItensTxt}>{placeDetails.description}</Text>
+          </ScrollView>
+        ) : null}
       </View>
     </Modal>
   );

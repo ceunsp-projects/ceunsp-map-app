@@ -3,14 +3,14 @@ import 'dotenv/config';
 export default {
   expo: {
     name: "ceunspMap",
-    slug: "ceunspMap",
+    slug: "CeunspMap",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    icon: "./assets/images/playstore.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     splash: {
-      image: "./assets/images/splash.png",
+      image: "./assets/images/playstore.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
@@ -25,9 +25,10 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
+        foregroundImage: "./assets/images/playstore.png",
         backgroundColor: "#ffffff"
-      }
+      },
+      package: "com.ceunspMap"
     },
     web: {
       favicon: "./assets/images/favicon.png"

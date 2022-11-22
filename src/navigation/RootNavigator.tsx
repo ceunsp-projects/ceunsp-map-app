@@ -6,7 +6,6 @@ import { RootStackParamList } from '../../types';
 import BottomTabNavigator from './BottomTabNavigator';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-
 const RootNavigator = () => {
   return (
     <Stack.Navigator>
@@ -16,7 +15,7 @@ const RootNavigator = () => {
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
     </Stack.Navigator>
-  ); 
+  );
 }
 
 export default memo(RootNavigator);

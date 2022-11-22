@@ -2,10 +2,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { SectionList, Text } from 'react-native';
-import { TextInput, StyleSheet, ActivityIndicator, ImageBackground } from 'react-native';
+import { TextInput, StyleSheet, ActivityIndicator } from 'react-native';
 import GridImageView from 'react-native-grid-image-viewer';
 import { View } from '~/components/Themed';
-import Colors from '~/constants/Colors';
 import theme from '~/global/theme';
 import useRequest from '~/hooks/useRequest';
 import { IPlace } from '~/interfaces/map';
@@ -52,7 +51,7 @@ const Galery = memo(() => {
     }
   }, [placeToViewAll]);
 
-  if (isLoading) return <ActivityIndicator color='#fff' size={50} />
+  if (isLoading) return <ActivityIndicator color='#fff' size={50} style={styles.loadingContainer} />
 
   return (
     <SectionList
@@ -71,7 +70,7 @@ const Galery = memo(() => {
             value={searchValue}
             onChangeText={onChangeText}
           />
-          <FontAwesome size={30} name='close' onPress={onClearText} color='#fff' />
+          {!!searchValue ? <FontAwesome size={30} name='close' onPress={onClearText} color='#fff' style={styles.iconStyle} /> : null}
         </View>
       }
     />
@@ -95,12 +94,15 @@ export const styles = StyleSheet.create({
     paddingVertical: 10
   },
   inputSearch: {
-    width: '90%',
+    flex: 1,
     height: 40,
     backgroundColor: '#fff',
     color: '#000',
     borderRadius: 20,
     paddingLeft: 10
+  },
+  iconStyle: {
+    paddingHorizontal: 8
   },
   notFound: {
     marginTop: 10,
@@ -111,9 +113,8 @@ export const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: 18
   },
-  loadingView: {
-    width: '100%',
-    height: '100%',
+  loadingContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.navy_blue

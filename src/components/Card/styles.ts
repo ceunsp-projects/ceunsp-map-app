@@ -3,22 +3,14 @@ import theme from '~/global/theme';
 
 export const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
-    backgroundColor: theme.colors.navy_blue,
-    width: Dimensions.get('window').width - 15,
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    width: Dimensions.get('window').width,
     height: '100%',
+    paddingHorizontal: 10,
     borderRadius: 5,
-    marginRight: 7.5,
-    position: 'relative'
-  },
-  firstContainer: {
-    alignItems: 'center',
-    backgroundColor: theme.colors.navy_blue,
-    width: Dimensions.get('window').width - 15,
-    height: '100%',
-    borderRadius: 5,
-    marginHorizontal: 7.5,
-    position: 'relative'
   },
   img: {
     width: '100%',
@@ -30,13 +22,15 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5
   },
   title: {
+    fontWeight: 'bold',
+    fontSize: 16,
     color: theme.colors.text
   }
 });

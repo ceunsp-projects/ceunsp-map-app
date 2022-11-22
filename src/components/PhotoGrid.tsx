@@ -5,13 +5,15 @@ import { IPlace } from '~/interfaces/map';
 
 interface IPhotoGrid {
   place: IPlace;
+  handleHideModal: () => void;
 }
 
-const PhotoGrid = memo<IPhotoGrid>(({ place }) => {
+const PhotoGrid = memo<IPhotoGrid>(({ place, handleHideModal }) => {
   const navigation = useNavigation();
 
   const onViewAll = useCallback(() => {
-    navigation.navigate('Galery', { place });
+    handleHideModal()
+    setTimeout(() => navigation.navigate('Galery', { place }), 0)
   }, [place]);
 
   return (
@@ -19,7 +21,7 @@ const PhotoGrid = memo<IPhotoGrid>(({ place }) => {
       <View style={styles.content}>
         {place.pictures.map(
           (picture, index) =>
-            index < 4 && (
+            index <= 4 && (
               <Image
                 key={index}
                 style={place.pictures.length === 1 ? styles.onlyOne : styles.image}

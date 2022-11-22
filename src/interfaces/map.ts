@@ -12,6 +12,7 @@ export interface IPlace {
 export interface IPlaceDetails {
   _id: number;
   name: string;
+  description?: string;
   location: {
     latitude: number;
     longitude: number;

@@ -25,9 +25,10 @@ const Card = memo<CardProps>(({ title, description, image, first, place, handleS
 
   return (
     <TouchableOpacity
-      style={first ? styles.firstContainer : styles.container}
+      style={styles.container}
       onPress={onShowModal}
       onLayout={onLayout}
+      activeOpacity={0.8}
     >
       <ImageBackground
         style={styles.img}

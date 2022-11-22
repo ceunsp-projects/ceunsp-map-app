@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, LayoutChangeEvent, StyleSheet, TouchableOpacity } from 'react-native';
 import { Compass, X } from 'phosphor-react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { MapEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 import { View } from '../components/Themed';
 import { RootTabScreenProps } from '../../types';
@@ -35,15 +35,12 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
   });
 
   const isFocused = useIsFocused();
-  const route = useRoute();
-  const newPlace = route.params?.place ?? null;
-
   const ScroolViewRef = useRef<ScrollView>();
   const MapRef = useRef<MapView>(null);
   const location = useLocation();
   const { width } = Dimensions.get('window');
 
-  const CARD_WIDTH = width - 7.5;
+  const CARD_WIDTH = width;
 
   let mapIndex = 0;
   const animation = new Animated.Value(0);
@@ -102,7 +99,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     setPlace(null);
   }, []);
 
-  const onShowCards = useCallback(() => {
+  const onShowCards = useCallback((open = false) => {
     if (!showCards && !!places) {
       const firstOfPlaces = places?.[0].location;
 
@@ -125,8 +122,27 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
       const layout = event.nativeEvent.layout;
       setDataSourceCords([...dataSourceCords, { _id: placeId, location: layout.x }]);
     },
-    [dataSourceCords, newPlace]
+    [dataSourceCords]
   );
+
+  const onPressMarker = useCallback((event: MapEvent<{
+    action: "marker-press";
+    id: string;
+  }>) => {
+    const place = places?.find(place => place.location.latitude === event.nativeEvent.coordinate.latitude)
+
+    if (!place) return;
+
+    const placeFinded = dataSourceCords.find(coord => coord._id === place._id);
+
+    if (!placeFinded?.location) return;
+
+    setTimeout(() => ScroolViewRef.current?.scrollTo({
+      x: placeFinded.location < 20 ? 0 : placeFinded.location,
+      y: 0,
+      animated: true
+    }), 0);
+  }, [places, dataSourceCords]);
 
   useEffect(() => {
     if (!showCards && !!location) {
@@ -139,33 +155,20 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
     }
   }, [location]);
 
-  useEffect(() => {
-    if (!!newPlace && !isLoading) {
-      const place = dataSourceCords.find(coord => coord._id === newPlace._id);
-      if (!place?.location) return;
-
-      setTimeout(() => {
-        ScroolViewRef.current?.scrollTo({
-          x: place.location,
-          y: 0,
-          animated: true
-        });
-      }, 2000);
-    }
-  }, [newPlace, isLoading]);
-
   return (
     <View style={styles.container}>
       <MapView
+        initialRegion={initialRegion}
         mapPadding={{ top: 40, right: 0, bottom: 0, left: 0 }}
-        showsCompass={true}
         provider={PROVIDER_GOOGLE}
-        showsMyLocationButton={true}
-        showsIndoors={true}
-        showsUserLocation={true}
         ref={MapRef}
         style={styles.map}
-        initialRegion={initialRegion}
+        showsCompass
+        showsMyLocationButton
+        showsIndoors
+        loadingEnabled
+        followsUserLocation
+        showsUserLocation
       >
         {places?.map((place, index) => {
           const scaleStyle = {
@@ -176,7 +179,7 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
             ]
           };
           return (
-            <Marker key={index} coordinate={place.location}>
+            <Marker key={index} coordinate={place.location} onPress={onPressMarker}>
               <Animated.View style={styles.markerWrap}>
                 <Animated.View style={[styles.ring, scaleStyle]} />
                 <View style={[styles.marker]} />
@@ -188,7 +191,6 @@ const Map = memo(({ navigation }: RootTabScreenProps<'TabOne'>) => {
 
       <TouchableOpacity style={styles.btnShowCards} onPress={onShowCards}>
         {showCards ? <X size={24} color={theme.colors.text} /> : <Compass size={24} color={theme.colors.text} />}
-        {/* {showCards ? <Text>Fechar</Text> : <Text>Abrir</Text>} */}
       </TouchableOpacity>
 
       {showCards && (
