@@ -1,11 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-gesture-handler';
 
-import useCachedResources from './src/hooks/useCachedResources';
-import useColorScheme from './src/hooks/useColorScheme';
-import Navigation from './src/navigation';
+import useCachedResources from './hooks/useCachedResources';
+import useColorScheme from './hooks/useColorScheme';
+import Navigation from './navigation';
 import { Platform, View } from 'react-native';
-import React from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 export default function App() {
