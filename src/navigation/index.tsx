@@ -1,12 +1,12 @@
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import * as React from 'react';
+import { memo } from 'react';
 import { ColorSchemeName } from 'react-native';
 import ErrorProvider from '~/providers/error';
 
 import LinkingConfiguration from './LinkingConfiguration';
 import RootNavigator from './RootNavigator';
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+const Navigation = memo(({ colorScheme }: { colorScheme: ColorSchemeName }) => {
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -16,5 +16,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       </ErrorProvider>
     </NavigationContainer>
   );
-}
 
+})
+
+export default Navigation;

@@ -1,26 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-gesture-handler';
-
-import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
-import { Platform, View } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
+import { Platform, StyleSheet, View } from 'react-native';
+import { Fragment, memo } from 'react';
 
-export default function App() {
-  const isLoadingComplete = useCachedResources();
+const App: React.FC = memo(() => {
   const colorScheme = useColorScheme();
-
-  if (!isLoadingComplete) {
-    return null;
-  } else {
-    SplashScreen.hideAsync();
-
-    return (
-      <View style={{ flex: 1 }}>
-        <Navigation colorScheme={colorScheme} />
+  return (
+    <Fragment>
+      <View style={styles.container}>
         <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} animated translucent />
+        <Navigation colorScheme={colorScheme} />
       </View>
-    );
+    </Fragment>
+  );
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
   }
-}
+})
+
+export default App;
+
