@@ -31,7 +31,10 @@ export default {
     },
     extra: {
       // Add your extra configs here
-      ENV_BASE_ENDPOINT: process.env.ENV_BASE_ENDPOINT
+      ENV_BASE_ENDPOINT: process.env.ENV_BASE_ENDPOINT,
+      eas: {
+        projectId: "9b197e29-6890-4d14-8292-4fab693caa20"
+      }
     }
   }
 }
