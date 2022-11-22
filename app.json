@@ -1,29 +1,35 @@
 {
-  "name": "ceunspMap",
-  "slug": "CeunspMap",
-  "version": "1.0.0",
-  "sdkVersion": "36.0.0",
-  "orientation": "portrait",
-  "icon": "./assets/images/playstore.png",
-  "platforms": [
-    "ios",
-    "android"
-  ],
-  "splash": {
-    "image": "./assets/images/playstore.png",
-    "resizeMode": "contain",
-    "backgroundColor": "#ffffff"
-  },
-  "updates": {
-    "fallbackToCacheTimeout": 0
-  },
-  "assetBundlePatterns": [
-    "**/*"
-  ],
-  "ios": {
-    "supportsTablet": true
-  },
-  "android": {
-    "package": "com.ceunsp.map"
+  "expo": {
+    "name": "ceunspMap",
+    "slug": "CeunspMap",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "myapp",
+    "icon": "./assets/images/playstore.png",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "splash": {
+      "image": "./assets/images/playstore.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "android": {
+      "package": "com.ceunsp.map"
+    }
   }
 }
