@@ -24,11 +24,7 @@ export default {
       supportsTablet: true
     },
     android: {
-      adaptiveIcon: {
-        foregroundImage: "./assets/images/playstore.png",
-        backgroundColor: "#ffffff"
-      },
-      package: "com.ceunspMap"
+      package: "com.ceunsp.map"
     },
     web: {
       favicon: "./assets/images/favicon.png"

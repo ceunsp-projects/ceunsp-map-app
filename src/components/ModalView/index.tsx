@@ -35,9 +35,9 @@ const ModalView = memo<ModalViewProps>(({ isVisible, handleHideModal, place }) =
       <View style={styles.cardModal}>
         <PhotoGrid place={place} handleHideModal={handleHideModal} />
 
-        {!!placeDetails?.description ? (
+        {!!placeDetails?.items ? (
           <ScrollView style={styles.scrollView}>
-            <Text style={styles.imgItensTxt}>{placeDetails.description}</Text>
+            {placeDetails?.items.map((item, index) => <Text key={item + index} style={styles.imgItensTxt}>{item ?? ''}</Text>)}
           </ScrollView>
         ) : null}
       </View>
